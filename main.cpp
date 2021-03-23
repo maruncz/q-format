@@ -41,10 +41,24 @@ public:
     template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     q(q<O_numBits, O_denBits> f) : q()
     {
-        // n = d * (f.n / double(f.d));
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
         {
             n = f.n;
+        }
+        else
+        {
+            constexpr auto shift = O_denBits - T_denBits;
+            int_t<std::max(T_numBits, O_numBits) +
+                  std::max(T_denBits, O_denBits)>
+                tmp = f.n;
+            if constexpr (O_denBits > T_denBits)
+            {
+                n = tmp >> shift;
+            }
+            else
+            {
+                n = tmp << -shift;
+            }
         }
     }
 
@@ -56,6 +70,8 @@ private:
     const uint_t<T_denBits>      d;
     const std::uint8_t           numBits;
     const std::uint8_t           denBits;
+
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 
     /*template <std::uint8_t A_numBits, std::uint8_t A_denBits,
               std::uint8_t B_numBits, std::uint8_t B_denBits>
@@ -72,9 +88,15 @@ operator*(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2)
 
 int main()
 {
-    q<2, 2> f1;
+    /*q<2, 2> f1;
     q<2, 2> f2(1.5);
-    double  d = f2;
+    double  d = f2;*/
+
+    /*int32_t tmp = -1024;
+    std::cout << (tmp >> 2) << std::endl;
+    std::cout << (tmp << 2) << std::endl;*/
+    q<2, 2> f1(-1.25);
+    q<4, 4> f2(f1);
 
     return 0;
 }
