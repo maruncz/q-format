@@ -1,0 +1,41 @@
+add_definitions(-DGTEST_LANGUAGE_CXX17)
+find_package(Threads REQUIRED)
+
+if ($ENV{GOOGLETEST_DIR})
+    set(GOOGLETEST_DIR $ENV{GOOGLETEST_DIR})
+else ()
+    if (NOT "/home/martin/c/googletest" STREQUAL "")
+        message(WARNING "Using googletest src dir specified at Qt Creator wizard")
+    endif ()
+    set(GOOGLETEST_DIR "/home/martin/c/googletest")
+endif ()
+if (EXISTS ${GOOGLETEST_DIR})
+    set(GTestSrc ${GOOGLETEST_DIR}/googletest)
+    set(GMockSrc ${GOOGLETEST_DIR}/googlemock)
+elseif (UNIX AND EXISTS /usr/src/gtest)
+    set(GTestSrc /usr/src/gtest)
+    message(WARNING "Using gtest from system")
+    if (EXISTS /usr/src/gmock)
+        set(GMockSrc /usr/src/gmock)
+    endif ()
+else ()
+    message( FATAL_ERROR "No googletest src dir found - set GOOGLETEST_DIR to enable!")
+endif ()
+
+set(GTestFiles ${GTestSrc}/src/gtest-all.cc)
+set(GTestIncludes ${GTestSrc} ${GTestSrc}/include)
+if (NOT ${GMockSrc} STREQUAL "")
+    list(APPEND GTestFiles ${GMockSrc}/src/gmock-all.cc)
+    list(APPEND GTestIncludes ${GMockSrc} ${GMockSrc}/include)
+endif ()
+
+#file(GLOB test_srcs tests/*.h tests/*.cpp)
+
+add_executable(tests tests/tests.cpp tests/tests.h ${GTestFiles})
+
+target_include_directories(tests PRIVATE ${GTestIncludes})
+target_link_libraries(tests PRIVATE Threads::Threads)
+
+#add_test(NAME test COMMAND test)
+
+add_executable(test-generator tests/test-generator.cpp)
