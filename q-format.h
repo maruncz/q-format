@@ -62,12 +62,14 @@ public:
     }
 
     operator double() const { return n / double(d); }
-    // q operator+(const q &f) {}
 
-    constexpr static double eps()
+    q operator+(const q &f)
     {
-        return exp2(-T_denBits);
+        n += f.n;
+        return *this;
     }
+
+    constexpr static double eps() { return exp2(-T_denBits); }
 
     constexpr static q max()
     {
@@ -98,17 +100,21 @@ private:
 
     template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 
-    /*template <std::uint8_t A_numBits, std::uint8_t A_denBits,
+    template <std::uint8_t A_numBits, std::uint8_t A_denBits,
               std::uint8_t B_numBits, std::uint8_t B_denBits>
-    friend q<A_numBits + B_numBits, A_denBits + B_denBits>
-    operator*(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2);*/
+    friend q<std::max(A_numBits, B_numBits) + 1, std::max(A_denBits, B_denBits)>
+    operator+(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2);
 };
 
-/*template <std::uint8_t A_numBits, std::uint8_t A_denBits,
+template <std::uint8_t A_numBits, std::uint8_t A_denBits,
           std::uint8_t B_numBits, std::uint8_t B_denBits>
-q<A_numBits + B_numBits, A_denBits + B_denBits>
-operator*(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2)
+q<std::max(A_numBits, B_numBits) + 1, std::max(A_denBits, B_denBits)>
+operator+(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2)
 {
-}*/
+    q<std::max(A_numBits, B_numBits), std::max(A_denBits, B_denBits)> tmpA(f1);
+    q<std::max(A_numBits, B_numBits), std::max(A_denBits, B_denBits)> tmpB(f2);
+    tmpA.n += tmpB.n;
+    return tmpA;
+}
 
 #endif // QFORMAT_H
