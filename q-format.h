@@ -31,13 +31,13 @@ using int_t = typename std::enable_if<T_numBits <=64,
         >::type>::type;
 // clang-format on
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
 public:
     q() = default;
     q(double f) { n = d * f; }
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -66,19 +66,23 @@ public:
 
     constexpr static double eps()
     {
-        double ret = 1.0;
-        uint8_t n  = T_denBits;
-        while (n--)
-        {
-            ret /= 2;
-        }
+        double  ret = 1.0;
+        uint8_t n   = T_denBits;
+        while (n--) { ret /= 2; }
         return ret;
     }
 
     constexpr static q max()
     {
         q ret;
-        ret.n = exp2(T_numBits + T_denBits - 1) - 1;
+        if constexpr ((T_numBits + T_denBits) == 64)
+        {
+            ret.n = std::numeric_limits<int64_t>::max();
+        }
+        else
+        {
+            ret.n = exp2(T_numBits + T_denBits - 1) - 1;
+        }
         return ret;
     }
 
@@ -90,12 +94,12 @@ public:
     }
 
 private:
-    int_t<T_numBits + T_denBits> n        = 0;
-    constexpr static uint_t<T_denBits> d  = (1 << T_denBits);
-    constexpr static std::uint8_t numBits = T_numBits;
-    constexpr static std::uint8_t denBits = T_denBits;
+    int_t<T_numBits + T_denBits>           n       = 0;
+    constexpr static uint_t<T_denBits + 1> d       = exp2(T_denBits);
+    constexpr static std::uint8_t          numBits = T_numBits;
+    constexpr static std::uint8_t          denBits = T_denBits;
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 
     /*template <std::uint8_t A_numBits, std::uint8_t A_denBits,
               std::uint8_t B_numBits, std::uint8_t B_denBits>

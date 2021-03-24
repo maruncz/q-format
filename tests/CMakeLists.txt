@@ -1,14 +1,8 @@
-add_definitions(-DGTEST_LANGUAGE_CXX17)
+add_definitions(-DGTEST_LANGUAGE_CXX20)
 find_package(Threads REQUIRED)
 
-if ($ENV{GOOGLETEST_DIR})
-    set(GOOGLETEST_DIR $ENV{GOOGLETEST_DIR})
-else ()
-    if (NOT "/home/martin/c/googletest" STREQUAL "")
-        message(WARNING "Using googletest src dir specified at Qt Creator wizard")
-    endif ()
-    set(GOOGLETEST_DIR "/home/martin/c/googletest")
-endif ()
+set(GOOGLETEST_DIR "" CACHE PATH "gtest dir")
+
 if (EXISTS ${GOOGLETEST_DIR})
     set(GTestSrc ${GOOGLETEST_DIR}/googletest)
     set(GMockSrc ${GOOGLETEST_DIR}/googlemock)
@@ -29,9 +23,13 @@ if (NOT ${GMockSrc} STREQUAL "")
     list(APPEND GTestIncludes ${GMockSrc} ${GMockSrc}/include)
 endif ()
 
-#file(GLOB test_srcs tests/*.h tests/*.cpp)
+file(GLOB test_srcs tests/*.h tests/*.cpp)
 
-add_executable(tests tests/tests.cpp tests/tests.h ${GTestFiles})
+#list(REMOVE_ITEM test_srcs ${CMAKE_CURRENT_DIR}/tests/test-generator.cpp)
+
+list(FILTER test_srcs EXCLUDE REGEX ".*test-generator.cpp$")
+
+add_executable(tests ${test_srcs} ${GTestFiles})
 
 target_include_directories(tests PRIVATE ${GTestIncludes})
 target_link_libraries(tests PRIVATE Threads::Threads)
