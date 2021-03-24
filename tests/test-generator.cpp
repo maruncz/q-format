@@ -1,7 +1,7 @@
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <vector>
-#include <iterator>
 
 //#define MINMAX
 
@@ -57,7 +57,7 @@ void print_tests_minmax(const std::vector<std::string> &s)
 #ifdef FLT_CONV
 std::vector<std::string> s;
 
-void produce_tests_flt_conv()
+void produce_tests()
 {
     for (int i = 1; i < 64; ++i)
     {
@@ -74,18 +74,19 @@ void produce_tests_flt_conv()
     }
 }
 
-void print_tests_flt_conv()
+void print_tests()
 {
-    for(auto i = s.begin();i!= s.end();++i)
+    for (auto i = s.begin(); i != s.end(); ++i)
     {
-        auto dist = std::distance(s.begin(),i);
-        if(!(dist % 128))
+        auto dist = std::distance(s.begin(), i);
+        if (!(dist % 128))
         {
-            if(dist != 0)
+            if (dist != 0)
             {
                 std::cout << "}\n\n";
             }
-            std::cout << "TEST(floatConversion,floatConversion" << dist / 128 << ")\n{\n";
+            std::cout << "TEST(floatConversion,floatConversion" << dist / 128
+                      << ")\n{\n";
         }
         std::cout << *i;
     }
@@ -95,7 +96,42 @@ void print_tests_flt_conv()
 #endif
 
 #ifdef CONV_CTOR
+std::vector<std::string> s;
 
+void produce_tests()
+{
+    for (int i = 1; i < 64; ++i)
+    {
+        for (int j = 1; j < 64; ++j)
+        {
+            if ((i + j) > 63)
+            {
+                continue;
+            }
+            std::stringstream ss;
+            ss << "CONV_SIZE(" << i << ", " << j << ");\n";
+            s.emplace_back(ss.str());
+        }
+    }
+}
+
+void print_tests()
+{
+    for (auto i = s.begin(); i != s.end(); ++i)
+    {
+        auto dist = std::distance(s.begin(), i);
+        if (!(dist % 128))
+        {
+            if (dist != 0)
+            {
+                std::cout << "}\n\n";
+            }
+            std::cout << "TEST(conversion,size" << dist / 128 << ")\n{\n";
+        }
+        std::cout << *i;
+    }
+    std::cout << "}\n\n";
+}
 #endif
 
 int main()
@@ -120,9 +156,9 @@ int main()
     std::cout << "}\n\n";
 #endif
 
-#ifdef FLT_CONV
-    produce_tests_flt_conv();
-    print_tests_flt_conv();
+#if defined(FLT_CONV) || defined(CONV_CTOR)
+    produce_tests();
+    print_tests();
 #endif
 
     return 0;

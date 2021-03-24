@@ -66,10 +66,7 @@ public:
 
     constexpr static double eps()
     {
-        double  ret = 1.0;
-        uint8_t n   = T_denBits;
-        while (n--) { ret /= 2; }
-        return ret;
+        return exp2(-T_denBits);
     }
 
     constexpr static q max()
