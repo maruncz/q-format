@@ -29,10 +29,14 @@ file(GLOB test_srcs tests/*.h tests/*.cpp)
 
 list(FILTER test_srcs EXCLUDE REGEX ".*test-generator.cpp$")
 
-add_executable(tests ${test_srcs} ${GTestFiles})
+add_library(gtest STATIC ${GTestFiles})
+target_include_directories(gtest PRIVATE ${GTestIncludes})
+target_link_libraries(gtest PRIVATE Threads::Threads)
 
+add_executable(tests ${test_srcs})
+add_dependencies(tests gtest)
 target_include_directories(tests PRIVATE ${GTestIncludes})
-target_link_libraries(tests PRIVATE Threads::Threads)
+target_link_libraries(tests PRIVATE Threads::Threads gtest)
 
 #add_test(NAME test COMMAND test)
 

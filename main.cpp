@@ -1,29 +1,35 @@
 #include "q-format.h"
 #include <iostream>
 
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
+void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
+{
+    std::cout << s << f.toDouble() << "\t" << f.max().toDouble() << "\t"
+              << f.eps().toDouble() << std::endl;
+}
+
 int main()
 {
-    /*q<2, 2> f1;
-    q<2, 2> f2(1.5);
-    double  d = f2;*/
+    q<1, 7> f1 = q<1, 7>::min() + q<1, 7>::eps(); //-127
+    q<1, 7> f2 = q<1, 7>::max();                  // 127
+    q<1, 7> f3 = q<1, 7>::min() + q<1, 7>::eps(); //-127
+    // double  d1 = 0.015625;
+    // double  d2 = 0.9921875;
+    // double  d3 = 1.0078125;
 
-    /*int32_t tmp = -1024;
-    std::cout << (tmp >> 2) << std::endl;
-    std::cout << (tmp << 2) << std::endl;*/
+    print_q("f1:  ", f1);
+    std::cout << "f1d: " << f1.toDouble() << '\n';
 
-    /*q<2, 2> f1(-exp2(-2));
-    q<4, 4> f2(f1);
+    print_q("f2:  ", f2);
+    std::cout << "f2d: " << f2.toDouble() << '\n';
 
-    std::cout << f1 << std::endl;
-    std::cout << f2 << std::endl;*/
+    print_q("f3:  ", f3);
+    std::cout << "f3d: " << f3.toDouble() << '\n';
 
-    q<2, 4> f1(-0.6875);
-    q<3, 1> f2(4.0);
+    f3 = f1 + f2;
 
-    auto f3 = f1 + f2;
-
-    std::cout << "res: " << f3 << " " << f3.max() << " " << f3.eps()
-              << std::endl;
+    print_q("f3:  ", f3);
+    std::cout << "f3d: " << f3.toDouble() << '\n';
 
     return 0;
 }

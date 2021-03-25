@@ -35,10 +35,11 @@ template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
 public:
     q() = default;
-    q(double f) { n = d * f; }
+    q(double f) { n = exp2(T_denBits) * f; }
+    q(float f) { n = exp2f(T_denBits) * f; }
 
     template <std::uint8_t O_numBits, std::uint8_t O_denBits>
-    q(q<O_numBits, O_denBits> f)
+    explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
         {
@@ -61,15 +62,50 @@ public:
         }
     }
 
-    operator double() const { return n / double(d); }
+    double toDouble() const { return n / exp2(T_denBits); }
+    double toFloat() const { return n / exp2f(T_denBits); }
+
+    // bool operator==(const q &f) { return n == f.n; }
 
     q operator+(const q &f)
     {
-        n += f.n;
-        return *this;
+        q tmp;
+        tmp.n = n + f.n;
+        return tmp;
     }
 
-    constexpr static double eps() { return exp2(-T_denBits); }
+    q operator-(const q &f)
+    {
+        q tmp;
+        tmp.n = n - f.n;
+        return tmp;
+    }
+
+    q operator*(const q &f)
+    {
+        using int_tt = int_t<2 * T_numBits + T_denBits>;
+        int_tt tmp   = int_tt(n) * int_tt(f.n);
+        tmp          = tmp >> T_denBits;
+        q ret;
+        ret.n = tmp;
+        return ret;
+    }
+
+    q operator/(const q &f)
+    {
+        using int_tt = int_t<T_numBits + 2 * T_denBits>;
+        int_tt tmp_n = int_tt(n << T_denBits);
+        q      ret;
+        ret.n = tmp_n / f.n;
+        return ret;
+    }
+
+    constexpr static q eps()
+    {
+        q<T_numBits, T_denBits> tmp;
+        tmp.n = 1;
+        return tmp;
+    }
 
     constexpr static q max()
     {
@@ -93,28 +129,9 @@ public:
     }
 
 private:
-    int_t<T_numBits + T_denBits>           n       = 0;
-    constexpr static uint_t<T_denBits + 1> d       = exp2(T_denBits);
-    constexpr static std::uint8_t          numBits = T_numBits;
-    constexpr static std::uint8_t          denBits = T_denBits;
+    int_t<T_numBits + T_denBits> n = 0;
 
     template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
-
-    template <std::uint8_t A_numBits, std::uint8_t A_denBits,
-              std::uint8_t B_numBits, std::uint8_t B_denBits>
-    friend q<std::max(A_numBits, B_numBits) + 1, std::max(A_denBits, B_denBits)>
-    operator+(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2);
 };
-
-template <std::uint8_t A_numBits, std::uint8_t A_denBits,
-          std::uint8_t B_numBits, std::uint8_t B_denBits>
-q<std::max(A_numBits, B_numBits) + 1, std::max(A_denBits, B_denBits)>
-operator+(q<A_numBits, A_denBits> f1, q<B_numBits, B_denBits> f2)
-{
-    q<std::max(A_numBits, B_numBits), std::max(A_denBits, B_denBits)> tmpA(f1);
-    q<std::max(A_numBits, B_numBits), std::max(A_denBits, B_denBits)> tmpB(f2);
-    tmpA.n += tmpB.n;
-    return tmpA;
-}
 
 #endif // QFORMAT_H
