@@ -13,25 +13,16 @@ void random_subtractions()
     {
         q_t                                    f1(dist(generator));
         const double                           d1  = f1.toDouble();
-        double                                 max = std::min(qmax, qmax - d1);
-        double                                 min = std::max(qmin, qmin - d1);
+        double                                 max = -std::min(qmax, qmax - d1);
+        double                                 min = -std::max(qmin, qmin - d1);
         std::uniform_real_distribution<double> tmp_dist(min, max);
         q_t                                    f2(tmp_dist(generator));
         double                                 d2 = f2.toDouble();
         q_t                                    f3 = f1 - f2;
         double                                 d3 = d1 - d2;
-
-        if (std::abs(d3 - f3.toDouble()) >= f3.eps().toDouble())
-        {
-            std::cerr << "f1: " << f1.toDouble() << " f2: " << f2.toDouble()
-                      << std::endl;
-        }
-
         ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
     }
 }
-
-TEST(operations, subtraction) {}
 
 TEST(operations, subtraction17)
 {
@@ -40,10 +31,15 @@ TEST(operations, subtraction17)
 
 TEST(operations, subtraction116)
 {
-    random_subtractions<1, 16>();
+    random_subtractions<1, 15>();
 }
 
 TEST(operations, subtraction131)
 {
     random_subtractions<1, 31>();
+}
+
+TEST(operations, subtraction163)
+{
+    random_subtractions<1, 63>();
 }

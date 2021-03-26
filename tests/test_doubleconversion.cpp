@@ -18,7 +18,22 @@ void random_doubleConversions()
     }
 }
 
-TEST(conversion, doubleConversion)
+TEST(conversion, doubleConversion17)
 {
     random_doubleConversions<1, 7>();
+}
+
+TEST(conversion, doubleConversion115)
+{
+    random_doubleConversions<1, 15>();
+}
+
+TEST(conversion, doubleConversion131)
+{
+    random_doubleConversions<1, 31>();
+}
+
+TEST(conversion, doubleConversion163)
+{
+    random_doubleConversions<1, 63>();
 }

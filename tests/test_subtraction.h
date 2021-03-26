@@ -5,6 +5,5 @@
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
-class operations_subtraction;
 
 #endif // TEST_SUBTRACTION_H

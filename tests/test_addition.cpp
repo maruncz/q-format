@@ -39,12 +39,17 @@ TEST(operations, addition17)
     random_additions<1, 7>();
 }
 
-TEST(operations, addition116)
+TEST(operations, addition115)
 {
-    random_additions<1, 16>();
+    random_additions<1, 15>();
 }
 
 TEST(operations, addition131)
 {
     random_additions<1, 31>();
+}
+
+TEST(operations, addition163)
+{
+    random_additions<1, 63>();
 }
