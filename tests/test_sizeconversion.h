@@ -1,7 +1,7 @@
 #ifndef TEST_SIZECONVERSION_H
 #define TEST_SIZECONVERSION_H
 
-#include "../q-format.h"
+#include "q-format.h"
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 

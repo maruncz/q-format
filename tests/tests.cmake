@@ -35,7 +35,7 @@ target_link_libraries(gtest PRIVATE Threads::Threads)
 
 add_executable(tests ${test_srcs})
 add_dependencies(tests gtest)
-target_include_directories(tests PRIVATE ${GTestIncludes})
+target_include_directories(tests PRIVATE ${GTestIncludes} ${CMAKE_SOURCE_DIR}/q-format)
 target_link_libraries(tests PRIVATE Threads::Threads gtest)
 
 #add_test(NAME test COMMAND test)
