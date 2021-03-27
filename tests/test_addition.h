@@ -5,6 +5,4 @@
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
-class operations_addition;
-
 #endif // TEST_ADDITION_H
