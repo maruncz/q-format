@@ -66,15 +66,15 @@ TEST(operations, multiplication_int)
     for(int i=0;i<10000;++i)
     {
         int16_t i1 = dist(generator);
-        int64_t t1 = i1;
+        double d1 = i1;
         int16_t i2 = dist(generator);
-        int64_t t2 = i2;
+        double d2 = i2;
 
         int16_t i3 = qf_mul128<16,15>(i1,i2);
-        int64_t t3 = t1 * t2;
-        t3 = t3 >> 15;
+        double d3 = d1 * d2;
+        d3 /= exp2(15);
 
-        ASSERT_EQ(t3,i3) << "err at i1: " << i1 << " i2: " << i2;
+        ASSERT_NEAR(d3,i3,0.5) << "err at i1: " << i1 << " i2: " << i2;
     }
 }
 
