@@ -39,7 +39,32 @@ void random_multiplications()
         double d2 = f2.toDouble();
         q_t f3    = f1 * f2;
         double d3 = d1 * d2;
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
+        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble())
+            << "err at f1: " << f1.toDouble() << " f2: " << f2.toDouble();
+    }
+}
+
+template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+void random_multiplications_int()
+{
+    auto imin = std::numeric_limits<int64_t>::min();
+    auto imax = std::numeric_limits<int64_t>::max();
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int_t<T_numBits + T_denBits>> dist(imin,
+                                                                     imax);
+
+    for (int i = 0; i < 10000; ++i)
+    {
+        int_t<T_numBits + T_denBits> i1 = dist(generator);
+        double d1                       = i1;
+        int_t<T_numBits + T_denBits> i2 = dist(generator);
+        double d2                       = i2;
+
+        int_t<T_numBits + T_denBits> i3 =
+            qf_mul128<T_numBits + T_denBits, T_denBits>(i1, i2);
+        double d3 = d1 * d2 / exp2(T_denBits);
+
+        ASSERT_NEAR(d3, i3, 0.5) << "err at i1: " << +i1 << " i2: " << +i2;
     }
 }
 
@@ -53,29 +78,16 @@ TEST(operations, multiplication)
         q<1, 7> f3;
         double d3 = d1 * d2;
         f3        = f1 * f2;
-        ASSERT_NEAR(d3,f3.toDouble(),f3.eps().toDouble());
+        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
     }
 }
 
 TEST(operations, multiplication_int)
 {
-    std::default_random_engine generator;
-    auto imin = std::numeric_limits<int16_t>::min();
-    auto imax = std::numeric_limits<int16_t>::max();
-    std::uniform_int_distribution<int64_t> dist(imin,imax);
-    for(int i=0;i<10000;++i)
-    {
-        int16_t i1 = dist(generator);
-        double d1 = i1;
-        int16_t i2 = dist(generator);
-        double d2 = i2;
-
-        int16_t i3 = qf_mul128<16,15>(i1,i2);
-        double d3 = d1 * d2;
-        d3 /= exp2(15);
-
-        ASSERT_NEAR(d3,i3,1) << "err at i1: " << i1 << " i2: " << i2;
-    }
+    random_multiplications_int<1, 7>();
+    random_multiplications_int<1, 15>();
+    random_multiplications_int<1, 31>();
+    random_multiplications_int<1, 63>();
 }
 
 TEST(operations, multiplication17)
