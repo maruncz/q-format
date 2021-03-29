@@ -74,7 +74,7 @@ TEST(operations, multiplication_int)
         double d3 = d1 * d2;
         d3 /= exp2(15);
 
-        ASSERT_NEAR(d3,i3,0.5) << "err at i1: " << i1 << " i2: " << i2;
+        ASSERT_NEAR(d3,i3,1) << "err at i1: " << i1 << " i2: " << i2;
     }
 }
 
