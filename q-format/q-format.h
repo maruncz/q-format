@@ -7,14 +7,15 @@
 #include <cstdint>
 #include <limits>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
 public:
     q() = default;
     q(double f) { n = exp2(T_denBits) * f; }
     q(float f) { n = exp2f(T_denBits) * f; }
+    q(long double f) { n = exp2l(T_denBits) * f; }
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -38,8 +39,9 @@ public:
         }
     }
 
-    double toDouble() const { return n / exp2(T_denBits); }
-    double toFloat() const { return n / exp2f(T_denBits); }
+    double      toDouble() const { return n / exp2(T_denBits); }
+    double      toFloat() const { return n / exp2f(T_denBits); }
+    long double toLongDouble() const { return n / exp2l(T_denBits); }
 
     q operator+(const q &f)
     {
@@ -78,7 +80,7 @@ public:
     {
         using int_tt = int_t<T_numBits + 2 * T_denBits>;
         int_tt tmp_n = int_tt(n << T_denBits);
-        q ret;
+        q      ret;
         ret.n = tmp_n / f.n;
         return ret;
     }
@@ -114,7 +116,7 @@ public:
 private:
     int_t<T_numBits + T_denBits> n = 0;
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 };
 
 #endif // QFORMAT_H
