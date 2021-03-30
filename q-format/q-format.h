@@ -59,9 +59,10 @@ public:
 
     q operator*(const q &f)
     {
-        if constexpr ((2 * (T_numBits + T_denBits)) <= 64)
+        constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
+        if constexpr (numBits <= 64)
         {
-            using int_tt = int_t<2 * (T_numBits + T_denBits)>;
+            using int_tt = int_t<numBits>;
             int_tt tmp   = int_tt(n) * int_tt(f.n);
             tmp          = tmp >> T_denBits;
             q ret;
@@ -78,11 +79,21 @@ public:
 
     q operator/(const q &f)
     {
-        using int_tt = int_t<T_numBits + 2 * T_denBits>;
-        int_tt tmp_n = int_tt(n << T_denBits);
-        q      ret;
-        ret.n = tmp_n / f.n;
-        return ret;
+        constexpr uint8_t numBits = T_numBits + 2 * T_denBits;
+        if constexpr (numBits <= 64)
+        {
+            using int_tt = int_t<numBits>;
+            int_tt tmp_n = int_tt(n << T_denBits);
+            q      ret;
+            ret.n = tmp_n / f.n;
+            return ret;
+        }
+        else
+        {
+            q ret;
+            ret.n = qf_div128<(T_numBits + T_denBits), T_denBits>(n, f.n);
+            return ret;
+        }
     }
 
     constexpr static q eps()

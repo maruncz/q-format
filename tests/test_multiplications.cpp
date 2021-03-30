@@ -2,6 +2,9 @@
 #include <iomanip>
 #include <random>
 
+/**
+ * @todo opravit limity
+ */
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 void random_multiplications()
 {
@@ -14,32 +17,10 @@ void random_multiplications()
     {
         q_t               f1(dist(generator));
         const long double d1 = f1.toLongDouble();
-
-        long double max = qmax / d1;
-        if (max > qmax)
-        {
-            max = qmax;
-        }
-        else if (max < qmin)
-        {
-            max = qmin;
-        }
-
-        long double min = qmin / d1;
-        if (min > qmax)
-        {
-            min = qmax;
-        }
-        else if (min < qmin)
-        {
-            min = qmin;
-        }
-
-        std::uniform_real_distribution<long double> tmp_dist(min, max);
-        q_t                                         f2(tmp_dist(generator));
-        const long double                           d2 = f2.toLongDouble();
-        q_t                                         f3 = f1 * f2;
-        long double                                 d3 = d1 * d2;
+        q_t               f2(dist(generator));
+        const long double d2 = f2.toLongDouble();
+        q_t               f3 = f1 * f2;
+        long double       d3 = d1 * d2;
 
         if constexpr ((T_numBits + T_denBits) <= 52)
         {
@@ -61,6 +42,9 @@ void random_multiplications()
     }
 }
 
+/**
+ * @todo opravit limity
+ */
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 void random_multiplications_int()
 {
@@ -98,16 +82,7 @@ void random_multiplications_int()
 
 TEST(operations, multiplication)
 {
-    {
-        q<1, 7> f1 = q<1, 7>::max();
-        q<1, 7> f2 = q<1, 7>::max();
-        double  d1 = f1.toDouble();
-        double  d2 = f2.toDouble();
-        q<1, 7> f3;
-        double  d3 = d1 * d2;
-        f3         = f1 * f2;
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
-    }
+    random_multiplications<2, 14>();
 }
 
 TEST(operations, multiplication_int)
