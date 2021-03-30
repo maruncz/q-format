@@ -32,11 +32,11 @@ int_t<numRes> qf_mul128(int_t<numRes> m1, int_t<numRes> m2)
     constexpr uint_t<numRes> maskLow  = (1ull << (numRes / 2)) - 1;
     constexpr uint_t<numRes> maskHigh = ((1ull << (numRes / 2)) - 1)
                                         << numRes / 2;
-    uint_t<numRes / 2> m1Low  = (m1 & maskLow);
-    uint_t<numRes / 2> m1High = (m1 & maskHigh) >> numRes / 2;
+    uint_t<numRes> m1Low  = (m1 & maskLow);
+    uint_t<numRes> m1High = (m1 & maskHigh) >> numRes / 2;
 
-    uint_t<numRes / 2> m2Low  = (m2 & maskLow);
-    uint_t<numRes / 2> m2High = (m2 & maskHigh) >> numRes / 2;
+    uint_t<numRes> m2Low  = (m2 & maskLow);
+    uint_t<numRes> m2High = (m2 & maskHigh) >> numRes / 2;
 
     uint_t<numRes> H = m1High * m2High;
     uint_t<numRes> M = (m1High * m2Low) + (m1Low * m2High);
