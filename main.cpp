@@ -1,4 +1,5 @@
 #include "q-format.h"
+#include <bitset>
 #include <iostream>
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
@@ -8,9 +9,6 @@ void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
               << f.eps().toDouble() << std::endl;
 }
 
-/**
- * @todo a musi byt unsigned
- */
 void pair_shift(uint16_t &a, uint16_t &b, uint8_t len)
 {
     a *= 2;
@@ -19,13 +17,19 @@ void pair_shift(uint16_t &a, uint16_t &b, uint8_t len)
         a += 1;
     }
     b *= 2;
-    b = b & (1 << len);
+    b = b & ((1 << (len + 1)) - 1);
 }
 
 uint8_t q_len(uint16_t q)
 {
     return floor(log2(q));
 }
+
+union tmpA
+{
+    uint16_t u;
+    int16_t  i;
+};
 
 int main()
 {
@@ -41,36 +45,36 @@ int main()
 
     // q/m = q,a
 
-    uint16_t  a   = 0;
+    tmpA a;
+    a.u          = 0;
     uint16_t m   = 2;
-    uint16_t q   = 128;
+    uint16_t q   = 127;
     uint8_t  len = q_len(q);
-    uint8_t  i   = len;
+    int8_t   i   = len + 1;
     do {
-        if (a & (1 << 16))
+        pair_shift(a.u, q, len);
+        if (a.i < 0)
         {
-            pair_shift(a, q, len);
-            a += m;
+            a.i += m;
         }
         else
         {
-            pair_shift(a, q, len);
-            a -= m;
+            a.i -= m;
         }
-        if (!(a & (1 << 16)))
+        if (a.i > 0)
         {
             q += 1;
         }
         --i;
     } while (i > 0);
 
-    /*if (a < 0)
+    if (a.i < 0)
     {
-        a += m;
-        --q;
-    }*/
+        a.i += m;
+        //--q;
+    }
 
-    std::cout << q << " " << a << std::endl;
+    std::cout << q << " " << a.i << std::endl;
 
     return 0;
 }
