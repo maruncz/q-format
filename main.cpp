@@ -25,56 +25,17 @@ uint8_t q_len(uint16_t q)
     return floor(log2(q));
 }
 
-union tmpA
-{
-    uint16_t u;
-    int16_t  i;
-};
-
 int main()
 {
-    /*int_t<64> n1 = -8616761059752331528;
-    int_t<64> n2 = 2456955197560417229;
-    int_t<64> n3 = qf_mul128<64, 63>(n1, n2);
+    q<1, 7> f1(0.3515625);
+    q<1, 7> f2(0.03125);
+    q<1, 7> f3 = f1 / f2;
+    double  d1 = f1.toDouble();
+    double  d2 = f2.toDouble();
+    double  d3 = d1 / d2;
 
-    std::cout << n3 << std::endl;*/
-
-    // std::cout << sizeof (double) << " " << sizeof (long double) << std::endl;
-
-    // https://stackoverflow.com/questions/12133810/non-restoring-division-algorithm
-
-    // q/m = q,a
-
-    tmpA a;
-    a.u          = 0;
-    uint16_t m   = 2;
-    uint16_t q   = 127;
-    uint8_t  len = q_len(q);
-    int8_t   i   = len + 1;
-    do {
-        pair_shift(a.u, q, len);
-        if (a.i < 0)
-        {
-            a.i += m;
-        }
-        else
-        {
-            a.i -= m;
-        }
-        if (a.i > 0)
-        {
-            q += 1;
-        }
-        --i;
-    } while (i > 0);
-
-    if (a.i < 0)
-    {
-        a.i += m;
-        //--q;
-    }
-
-    std::cout << q << " " << a.i << std::endl;
+    print_q("f3: ", f3);
+    std::cout << d3 << std::endl;
 
     return 0;
 }

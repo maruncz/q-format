@@ -2,7 +2,8 @@
 #define QFORMAT_H
 
 #include "int_types.h"
-#include "q-format_operations.inl"
+#include "q-format-div128.inl"
+#include "q-format-mul128.inl"
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -79,7 +80,9 @@ public:
 
     q operator/(const q &f)
     {
-        constexpr uint8_t numBits = T_numBits + 2 * T_denBits;
+        static_assert(T_numBits > 1, "nejde delit");
+        constexpr uint8_t numBits =
+            2 * (T_numBits + T_denBits); // T_numBits + 2 * T_denBits;
         if constexpr (numBits <= 64)
         {
             using int_tt = int_t<numBits>;
