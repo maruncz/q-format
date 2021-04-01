@@ -80,21 +80,21 @@ public:
 
     q operator/(const q &f)
     {
-        static_assert(T_numBits > 1, "nejde delit");
-        constexpr uint8_t numBits =
-            2 * (T_numBits + T_denBits); // T_numBits + 2 * T_denBits;
+        constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
         if constexpr (numBits <= 64)
         {
             using int_tt = int_t<numBits>;
-            int_tt tmp_n = int_tt(n << T_denBits);
-            q      ret;
+            int_tt tmp_n = n;
+            tmp_n        = tmp_n << T_denBits;
+            q ret;
             ret.n = tmp_n / f.n;
             return ret;
         }
         else
         {
             q ret;
-            ret.n = qf_div128<(T_numBits + T_denBits), T_denBits>(n, f.n);
+            auto tmp = qf_div128<numBits>(n, f.n);
+            ret.n = tmp.first;
             return ret;
         }
     }

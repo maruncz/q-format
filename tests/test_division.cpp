@@ -2,9 +2,6 @@
 #include <iomanip>
 #include <random>
 
-/**
- * @todo udelat
- */
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 void random_divisions()
 {
@@ -18,8 +15,8 @@ void random_divisions()
         q_t               f1(dist(generator));
         const long double d1 = f1.toLongDouble();
 
-        const auto                                  max = (d1 / qmax);
-        const auto                                  min = d1 / qmin;
+        const auto max = qmax;
+        const auto min = std::abs(d1 / qmax) + q_t::eps().toDouble();
         std::uniform_real_distribution<long double> tmp(min, max);
 
         q_t               f2(tmp(generator));
@@ -30,7 +27,8 @@ void random_divisions()
         if constexpr ((T_numBits + T_denBits) <= 52)
         {
             ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble())
-                << "err at f1: " << f1.toDouble() << " f2: " << f2.toDouble();
+                << "err at " << i << " f1: " << f1.toDouble()
+                << " f2: " << f2.toDouble();
         }
         else
         {
@@ -47,7 +45,56 @@ void random_divisions()
     }
 }
 
-TEST(operations, division) {}
+template <std::uint8_t numRes> void random_divisions_int()
+{
+    auto                       imin = std::numeric_limits<int_t<numRes>>::min();
+    auto                       imax = std::numeric_limits<int_t<numRes>>::max();
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int_t<numRes>> dist(imin, imax);
+
+    for (int i = 0; i < 10000; ++i)
+    {
+        int_t<numRes> i1 = dist(generator);
+        long double   d1 = i1;
+
+        const long double max = imax;
+        const long double min = std::abs(d1 / imax) + 1;
+
+        std::uniform_real_distribution<long double> tmp(min, max);
+
+        int_t<numRes> i2 = tmp(generator);
+        long double   d2 = i2;
+
+        auto          ret = qf_div128<numRes>(i1, i2);
+        int_t<numRes> i3  = ret.first;
+        long double   d3  = d1 / d2;
+        long double   d4  = i3 * i2 + ret.second;
+
+        if constexpr (numRes <= 52)
+        {
+            ASSERT_NEAR(d3, i3, 0.5)
+                << std::setprecision(20) << "err at i1: " << +i1
+                << " i2: " << +i2 << " d3: " << d3 << " i3: " << +i3
+                << " rem: " << +ret.second;
+
+            ASSERT_NEAR(d1, d4, 0.01)
+                << "err at i1: " << +i1 << " i2: " << +i2 << " d1: " << d1
+                << " i3: " << +i3 << " rem: " << +ret.second;
+        }
+        else
+        {
+            long double diff = std::abs(d3 - static_cast<long double>(i3));
+            ASSERT_TRUE(diff <= 0.5)
+                << std::setprecision(20) << "err at i1: " << +i1
+                << " i2: " << +i2 << " d3: " << d3 << " i3: " << +i3;
+        }
+    }
+}
+
+TEST(operations, division)
+{
+    random_divisions_int<8>();
+}
 
 TEST(operations, division17)
 {
@@ -56,12 +103,12 @@ TEST(operations, division17)
 
 TEST(operations, division115)
 {
-    // random_divisions<1, 15>();
+    random_divisions<1, 15>();
 }
 
 TEST(operations, division131)
 {
-    // random_divisions<1, 31>();
+    random_divisions<1, 31>();
 }
 
 TEST(operations, division163)

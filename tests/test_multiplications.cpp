@@ -17,7 +17,13 @@ void random_multiplications()
     {
         q_t               f1(dist(generator));
         const long double d1 = f1.toLongDouble();
-        q_t               f2(dist(generator));
+
+        const long double max = d1 / qmax;
+        const long double min = d1 / qmin;
+
+        std::uniform_real_distribution<long double> tmp(min, max);
+
+        q_t               f2(tmp(generator));
         const long double d2 = f2.toLongDouble();
         q_t               f3 = f1 * f2;
         long double       d3 = d1 * d2;
@@ -48,9 +54,9 @@ void random_multiplications()
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 void random_multiplications_int()
 {
-    auto                       imin   = std::numeric_limits<int64_t>::min();
-    auto                       imax   = std::numeric_limits<int64_t>::max();
     constexpr uint8_t          numRes = T_numBits + T_denBits;
+    auto                       imin = std::numeric_limits<int_t<numRes>>::min();
+    auto                       imax = std::numeric_limits<int_t<numRes>>::max();
     std::default_random_engine generator;
     std::uniform_int_distribution<int_t<numRes>> dist(imin, imax);
 
@@ -58,7 +64,13 @@ void random_multiplications_int()
     {
         int_t<numRes> i1 = dist(generator);
         long double   d1 = i1;
-        int_t<numRes> i2 = dist(generator);
+
+        const long double max = d1 / imax;
+        const long double min = d1 / imin;
+
+        std::uniform_real_distribution<long double> tmp(min, max);
+
+        int_t<numRes> i2 = tmp(generator);
         long double   d2 = i2;
 
         int_t<numRes> i3 = qf_mul128<numRes, T_denBits>(i1, i2);
