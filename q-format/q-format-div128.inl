@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility>
 
-#define DBG
+//#define DBG
 
 template <std::uint8_t T_numBits_a, std::uint8_t T_numBits_b>
 void pair_shift(uint_t<T_numBits_a> &a, uint_t<T_numBits_b> &b, uint8_t len)
@@ -42,11 +42,11 @@ std::pair<int_t<numRes>, int_t<numRes>> qf_div128(int_t<numRes> m1,
     auto sign = signum(m1) * signum(m2);
     m1        = m1 * signum(m1);
     m2        = m2 * signum(m2);
-    tmpA<numRes+1> a;
+    tmpA<numRes + 1> a;
     a.u = 0;
 #ifdef DBG
-    std::bitset<numRes+1> ba;
-    std::bitset<numRes> bq;
+    std::bitset<numRes + 1> ba;
+    std::bitset<numRes>     bq;
 #endif
 
     // q/m = q,a
@@ -56,24 +56,15 @@ std::pair<int_t<numRes>, int_t<numRes>> qf_div128(int_t<numRes> m1,
     int8_t         i   = len + 1;
 
     do {
-#ifdef DBG
-        ba = a.u;
-        bq = q;
-        std::cout << +i << " start\ta: " << ba << "\tq: " << bq << std::endl;
-#endif
         --i;
-        pair_shift<numRes+1,numRes>(a.u, q, len);
-#ifdef DBG
-        ba = a.u;
-        bq = q;
-        std::cout << +i << " shift\ta: " << ba << "\tq: " << bq << std::endl;
-#endif
         if (a.i < 0)
         {
+            pair_shift<numRes + 1, numRes>(a.u, q, len);
             a.i += m;
         }
         else
         {
+            pair_shift<numRes + 1, numRes>(a.u, q, len);
             a.i -= m;
         }
 #ifdef DBG
