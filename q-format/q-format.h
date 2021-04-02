@@ -10,6 +10,7 @@
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
+    static_assert ((T_numBits + T_denBits) <=32, "moc velke");
 public:
     q() = default;
     q(double f) { n = exp2(T_denBits) * f; }

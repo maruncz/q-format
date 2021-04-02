@@ -33,7 +33,3 @@ TEST(conversion, doubleConversion131)
     random_doubleConversions<1, 31>();
 }
 
-TEST(conversion, doubleConversion163)
-{
-    random_doubleConversions<1, 63>();
-}

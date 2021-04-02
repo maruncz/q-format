@@ -48,8 +48,3 @@ TEST(operations, addition131)
 {
     random_additions<1, 31>();
 }
-
-TEST(operations, addition163)
-{
-    random_additions<1, 63>();
-}

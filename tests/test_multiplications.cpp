@@ -119,8 +119,3 @@ TEST(operations, multiplication131)
 {
     random_multiplications<1, 31>();
 }
-
-TEST(operations, multiplication163)
-{
-    random_multiplications<1, 63>();
-}

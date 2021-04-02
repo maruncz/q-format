@@ -91,11 +91,6 @@ template <std::uint8_t numRes> void random_divisions_int()
     }
 }
 
-TEST(operations, division)
-{
-    random_divisions_int<8>();
-}
-
 TEST(operations, division17)
 {
     random_divisions<1, 7>();
@@ -111,7 +106,3 @@ TEST(operations, division131)
     random_divisions<1, 31>();
 }
 
-TEST(operations, division163)
-{
-    // random_divisions<1, 63>();
-}

@@ -38,8 +38,3 @@ TEST(operations, subtraction131)
 {
     random_subtractions<1, 31>();
 }
-
-TEST(operations, subtraction163)
-{
-    random_subtractions<1, 63>();
-}
