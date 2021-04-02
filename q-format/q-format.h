@@ -2,22 +2,21 @@
 #define QFORMAT_H
 
 #include "int_types.h"
-#include "q-format-div128.inl"
-#include "q-format-mul128.inl"
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
-template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
-    static_assert ((T_numBits + T_denBits) <=32, "moc velke");
+    static_assert((T_numBits + T_denBits) <= 32, "moc velke");
+
 public:
     q() = default;
     q(double f) { n = exp2(T_denBits) * f; }
     q(float f) { n = exp2f(T_denBits) * f; }
     q(long double f) { n = exp2l(T_denBits) * f; }
 
-    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -41,8 +40,8 @@ public:
         }
     }
 
-    double      toDouble() const { return n / exp2(T_denBits); }
-    double      toFloat() const { return n / exp2f(T_denBits); }
+    double toDouble() const { return n / exp2(T_denBits); }
+    double toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
 
     q operator+(const q &f)
@@ -62,42 +61,23 @@ public:
     q operator*(const q &f)
     {
         constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
-        if constexpr (numBits <= 64)
-        {
-            using int_tt = int_t<numBits>;
-            int_tt tmp   = int_tt(n) * int_tt(f.n);
-            tmp          = tmp >> T_denBits;
-            q ret;
-            ret.n = tmp;
-            return ret;
-        }
-        else
-        {
-            q ret;
-            ret.n = qf_mul128<(T_numBits + T_denBits), T_denBits>(n, f.n);
-            return ret;
-        }
+        using int_tt              = int_t<numBits>;
+        int_tt tmp                = int_tt(n) * int_tt(f.n);
+        tmp                       = tmp >> T_denBits;
+        q ret;
+        ret.n = tmp;
+        return ret;
     }
 
     q operator/(const q &f)
     {
         constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
-        if constexpr (numBits <= 64)
-        {
-            using int_tt = int_t<numBits>;
-            int_tt tmp_n = n;
-            tmp_n        = tmp_n << T_denBits;
-            q ret;
-            ret.n = tmp_n / f.n;
-            return ret;
-        }
-        else
-        {
-            q ret;
-            auto tmp = qf_div128<numBits>(n, f.n);
-            ret.n = tmp.first;
-            return ret;
-        }
+        using int_tt              = int_t<numBits>;
+        int_tt tmp_n              = n;
+        tmp_n                     = tmp_n << T_denBits;
+        q ret;
+        ret.n = tmp_n / f.n;
+        return ret;
     }
 
     constexpr static q eps()
@@ -131,7 +111,7 @@ public:
 private:
     int_t<T_numBits + T_denBits> n = 0;
 
-    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 };
 
 #endif // QFORMAT_H
