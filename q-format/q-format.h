@@ -80,6 +80,27 @@ public:
         return ret;
     }
 
+    q getInt() const
+    {
+        q ret(*this);
+        auto sign = signum(ret.n);
+        ret.n *= sign;
+        ret.n &= (~((1 << T_denBits) - 1));
+        ret.n *= sign;
+        return ret;
+    }
+
+    q getFrac() const
+    {
+        q ret(*this);
+        auto sign = signum(ret.n);
+        ret.n *= sign;
+        // uint_t<T_numBits + T_denBits> mask1 = ((1ull << T_denBits) - 1);
+        ret.n &= ((1ull << T_denBits) - 1);
+        ret.n *= sign;
+        return ret;
+    }
+
     constexpr static q eps()
     {
         q<T_numBits, T_denBits> tmp;
