@@ -9,12 +9,14 @@
 template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
     static_assert((T_numBits + T_denBits) <= 32, "moc velke");
+    using int_tt = int_t<T_numBits + T_denBits>;
 
 public:
     q() = default;
     q(double f) { n = exp2(T_denBits) * f; }
     q(float f) { n = exp2f(T_denBits) * f; }
     q(long double f) { n = exp2l(T_denBits) * f; }
+    q(int_tt i) { n = i << T_denBits; }
 
     template<std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
@@ -44,48 +46,25 @@ public:
     double toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
 
-    q operator+(const q &f)
-    {
-        q tmp;
-        tmp.n = n + f.n;
-        return tmp;
-    }
+    q operator+(const q &f);
+    q operator-(const q &f);
+    q operator*(const q &f);
+    q operator/(const q &f);
+    q operator/(const int_tt &i);
 
-    q operator-(const q &f)
-    {
-        q tmp;
-        tmp.n = n - f.n;
-        return tmp;
-    }
-
-    q operator*(const q &f)
-    {
-        constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
-        using int_tt              = int_t<numBits>;
-        int_tt tmp                = int_tt(n) * int_tt(f.n);
-        tmp                       = tmp >> T_denBits;
-        q ret;
-        ret.n = tmp;
-        return ret;
-    }
-
-    q operator/(const q &f)
-    {
-        constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
-        using int_tt              = int_t<numBits>;
-        int_tt tmp_n              = n;
-        tmp_n                     = tmp_n << T_denBits;
-        q ret;
-        ret.n = tmp_n / f.n;
-        return ret;
-    }
+    friend bool operator<(const q &f1, const q &f2) { return f1.n < f2.n; }
+    friend bool operator>(const q &f1, const q &f2) { return f1.n > f2.n; }
+    friend bool operator<=(const q &f1, const q &f2) { return f1.n <= f2.n; }
+    friend bool operator>=(const q &f1, const q &f2) { return f1.n >= f2.n; }
+    friend bool operator==(const q &f1, const q &f2) { return f1.n == f2.n; }
+    friend bool operator!=(const q &f1, const q &f2) { return f1.n != f2.n; }
 
     q getInt() const
     {
         q ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
-        ret.n &= (~((1 << T_denBits) - 1));
+        ret.n &= (~(base() - 1ull));
         ret.n *= sign;
         return ret;
     }
@@ -95,11 +74,13 @@ public:
         q ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
-        // uint_t<T_numBits + T_denBits> mask1 = ((1ull << T_denBits) - 1);
-        ret.n &= ((1ull << T_denBits) - 1);
+        ret.n &= (base() - 1ull);
         ret.n *= sign;
         return ret;
     }
+
+    q max(const q &f1, const q &f2) const { return f1 > f2 ? f1 : f2; }
+    q min(const q &f1, const q &f2) const { return f1 < f2 ? f1 : f2; }
 
     constexpr static q eps()
     {
@@ -129,10 +110,21 @@ public:
         return ret;
     }
 
+    constexpr static int_t<T_denBits + 1> base() { return 1ull << T_denBits; }
+
+    q sqrt() const;
+
 private:
-    int_t<T_numBits + T_denBits> n = 0;
+    q pow(const q &f, uint8_t exp) const;
+    q root(int8_t exp) const;
+
+    int_tt n = 0;
 
     template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
 };
+
+#include "q-format-operations-basic.inl"
+#include "q-format-operations-exp.inl"
+#include "q-format-operations-root.inl"
 
 #endif // QFORMAT_H
