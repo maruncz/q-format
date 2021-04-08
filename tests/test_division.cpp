@@ -57,12 +57,13 @@ void random_divisions_int()
         q_t f1(dist(generator));
         const long double d1 = f1.toLongDouble();
 
-        const auto max = 1/q_t::eps().toDouble();
+        const auto max = 1 / q_t::eps().toDouble();
         const auto min = 1;
-        std::uniform_int_distribution<int_t<T_numBits + T_denBits>> tmp(min, max);
+        std::uniform_int_distribution<int_t<T_numBits + T_denBits>> tmp(min,
+                                                                        max);
 
         int_t<T_numBits + T_denBits> f2(tmp(generator));
-        if(f2 == 0)
+        if (f2 == 0)
         {
             continue;
         }
@@ -73,8 +74,7 @@ void random_divisions_int()
         if constexpr ((T_numBits + T_denBits) <= 52)
         {
             ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble())
-                << "err at " << i << " f1: " << f1.toDouble()
-                << " f2: " << f2;
+                << "err at " << i << " f1: " << f1.toDouble() << " f2: " << f2;
         }
         else
         {

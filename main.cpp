@@ -11,13 +11,17 @@ void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
 
 int main()
 {
+    using q_t = q<3, 29>;
+    q_t f1(1.1);
 
-    q<3,29> f1(2.0);
+    q_t f2 = f1.sqrt();
 
-    q<3,29> f2 = f1.sqrt();
+    print_q("f1: ", f1);
+    print_q("f2: ", f2);
 
-    print_q("f1: ",f1);
-    print_q("f2: ",f2);
+    std::cout << sqrt(2.0) - f2.toDouble() << std::endl;
+    std::cout << std::abs(sqrt(2.0) - f2.toDouble()) / q_t::eps().toDouble()
+              << std::endl;
 
     return 0;
 }
