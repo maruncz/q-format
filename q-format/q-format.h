@@ -125,8 +125,8 @@ private:
     friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
 
-#include "q-format-operations-basic.inl"
-#include "q-format-operations-exp.inl"
-#include "q-format-operations-root.inl"
+#include "q-format-ops-basic.inl"
+#include "q-format-ops-exp.inl"
+#include "q-format-ops-root.inl"
 
 #endif // QFORMAT_H
