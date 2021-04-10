@@ -51,4 +51,12 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const int_tt &i)
     return ret;
 }
 
+template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+q<T_numBits, T_denBits> abs(const q<T_numBits, T_denBits> &f)
+{
+    q<T_numBits, T_denBits> ret;
+    ret.n = std::abs(f.n);
+    return ret;
+}
+
 #endif // QFORMATOPERATIONSBASIC_INL

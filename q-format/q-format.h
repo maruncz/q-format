@@ -121,6 +121,8 @@ private:
     int_tt n = 0;
 
     template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
 
 #include "q-format-operations-basic.inl"
