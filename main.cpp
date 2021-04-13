@@ -12,7 +12,7 @@ void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
 int main()
 {
     using q_t = q<3, 29>;
-    q_t f1(1.1);
+    q_t f1(2);
 
     q_t f2 = f1.sqrt();
 
