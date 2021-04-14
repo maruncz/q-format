@@ -32,4 +32,3 @@ TEST(conversion, doubleConversion131)
 {
     random_doubleConversions<1, 31>();
 }
-

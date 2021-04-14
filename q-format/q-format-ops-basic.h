@@ -3,7 +3,7 @@
 
 #include "q-format.h"
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator+(const q &f)
 {
     q tmp;
@@ -11,7 +11,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator+(const q &f)
     return tmp;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator-(const q &f)
 {
     q tmp;
@@ -19,7 +19,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator-(const q &f)
     return tmp;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator*(const q &f)
 {
     constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
@@ -31,7 +31,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator*(const q &f)
     return ret;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q &f)
 {
     constexpr uint8_t numBits = 2 * (T_numBits + T_denBits);
@@ -43,7 +43,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q &f)
     return ret;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const int_tt &i)
 {
     q ret;
@@ -51,7 +51,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const int_tt &i)
     return ret;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> abs(const q<T_numBits, T_denBits> &f)
 {
     q<T_numBits, T_denBits> ret;

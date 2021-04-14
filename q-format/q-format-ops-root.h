@@ -3,10 +3,12 @@
 
 // https://math.stackexchange.com/questions/462443/calculating-non-integer-exponent
 
+#include "q-format-ops-basic.h"
+#include "q-format-ops-exp.h"
 #include "q-format.h"
 #include <iostream>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(int8_t exp) const
 {
     q ret(*this);
@@ -27,7 +29,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(int8_t exp) const
     return ret;
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::sqrt() const
 {
     return root(2);

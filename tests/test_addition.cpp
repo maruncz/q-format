@@ -1,4 +1,5 @@
 #include "test_addition.h"
+#include "q-format-ops-basic.h"
 #include <random>
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>

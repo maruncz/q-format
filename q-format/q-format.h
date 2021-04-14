@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <limits>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
     static_assert((T_numBits + T_denBits) <= 32, "moc velke");
     using int_tt = int_t<T_numBits + T_denBits>;
@@ -18,7 +18,7 @@ public:
     q(long double f) { n = exp2l(T_denBits) * f; }
     q(int_tt i) { n = i << T_denBits; }
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -42,8 +42,8 @@ public:
         }
     }
 
-    double toDouble() const { return n / exp2(T_denBits); }
-    double toFloat() const { return n / exp2f(T_denBits); }
+    double      toDouble() const { return n / exp2(T_denBits); }
+    double      toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
 
     q operator+(const q &f);
@@ -61,7 +61,7 @@ public:
 
     q getInt() const
     {
-        q ret(*this);
+        q    ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (~(base() - 1ull));
@@ -71,7 +71,7 @@ public:
 
     q getFrac() const
     {
-        q ret(*this);
+        q    ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (base() - 1ull);
@@ -114,19 +114,16 @@ public:
 
     q sqrt() const;
 
-private:
     q pow(const q &f, uint8_t exp) const;
+
+private:
     q root(int8_t exp) const;
 
     int_tt n = 0;
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
-
-#include "q-format-ops-basic.inl"
-#include "q-format-ops-exp.inl"
-#include "q-format-ops-root.inl"
 
 #endif // QFORMAT_H
