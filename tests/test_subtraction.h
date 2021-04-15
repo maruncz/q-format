@@ -5,5 +5,4 @@
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
-
 #endif // TEST_SUBTRACTION_H

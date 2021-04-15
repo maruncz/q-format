@@ -1,7 +1,9 @@
 #include "test_division.h"
 #include "q-format-ops-basic.h"
+#include "test_misc.h"
 #include <iomanip>
 #include <random>
+#include <sstream>
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 void random_divisions()
@@ -27,9 +29,10 @@ void random_divisions()
 
         if constexpr ((T_numBits + T_denBits) <= 52)
         {
-            ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble())
-                << "err at " << i << " f1: " << f1.toDouble()
-                << " f2: " << f2.toDouble();
+            std::stringstream s;
+            assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
+            /*<< "err at " << i << " f1: " << f1.toDouble()
+            << " f2: " << f2.toDouble();*/
         }
         else
         {

@@ -2,7 +2,10 @@
 #define TEST_ADDITION_H
 
 #include "q-format.h"
-#include <gmock/gmock-matchers.h>
-#include <gtest/gtest.h>
+
+void test_operations_addition();
+void test_operations_addition17();
+void test_operations_addition115();
+void test_operations_addition131();
 
 #endif // TEST_ADDITION_H

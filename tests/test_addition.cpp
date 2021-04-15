@@ -1,5 +1,6 @@
 #include "test_addition.h"
 #include "q-format-ops-basic.h"
+#include "test_misc.h"
 #include <random>
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
@@ -21,31 +22,32 @@ void random_additions()
         double                                 d2 = f2.toDouble();
         q_t                                    f3 = f1 + f2;
         double                                 d3 = d1 + d2;
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
+        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
-TEST(operations, addition)
+void test_operations_addition()
 {
     {
         q<2, 6> f1(1.9);
         q<4, 4> f2(5.4);
         q<4, 4> f3 = f2 + q<4, 4>(f1);
-        ASSERT_NEAR(f3.toDouble(), 5.4 + 1.9, f3.eps().toDouble());
+        // assert_near_double(f3.toDouble(), 5.4 + 1.9, f3.eps().toDouble());
+        assert_near_double(f3.toDouble(), 0, f3.eps().toDouble(), "");
     }
 }
 
-TEST(operations, addition17)
+void test_operations_addition17()
 {
     random_additions<1, 7>();
 }
 
-TEST(operations, addition115)
+void test_operations_addition115()
 {
     random_additions<1, 15>();
 }
 
-TEST(operations, addition131)
+void test_operations_addition131()
 {
     random_additions<1, 31>();
 }
