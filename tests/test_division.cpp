@@ -3,7 +3,6 @@
 #include "q-format.h"
 #include "test_misc.h"
 #include <random>
-#include <sstream>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_divisions()
 {
@@ -26,10 +25,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_divisions()
         q_t f3               = f1 / f2;
         long double d3       = d1 / d2;
 
-        std::stringstream s;
-        s << "err at " << i << " f1: " << f1.toDouble()
-          << " f2: " << f2.toDouble();
-        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), s.str());
+        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
@@ -60,9 +56,7 @@ void random_divisions_int()
         q_t f3               = f1 / f2;
         long double d3       = d1 / d2;
 
-        std::stringstream s;
-        s << "err at " << i << " f1: " << f1.toDouble() << " f2: " << f2;
-        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), s.str());
+        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 

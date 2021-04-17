@@ -1,10 +1,8 @@
 #include "test_multiplications.h"
 #include "q-format-ops-basic.h"
 #include "test_misc.h"
-#include <iomanip>
 #include <q-format.h>
 #include <random>
-#include <sstream>
 
 /**
  * @todo opravit limity
@@ -31,9 +29,7 @@ void random_multiplications()
         const long double d2 = f2.toLongDouble();
         q_t f3               = f1 * f2;
         long double d3       = d1 * d2;
-        std::stringstream s;
-        s << "err at f1: " << f1.toDouble() << " f2: " << f2.toDouble();
-        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), s.str());
+        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 

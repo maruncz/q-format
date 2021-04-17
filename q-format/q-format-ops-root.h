@@ -6,7 +6,6 @@
 #include "q-format-ops-basic.h"
 #include "q-format-ops-exp.h"
 #include "q-format.h"
-#include <iostream>
 
 /**
  * @bug nefunguje protoze f2 se zaokrouhli na 0
@@ -27,7 +26,6 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(int8_t exp) const
             break;
         }
         prev = ret;
-        std::cout << ret.toDouble() << std::endl;
     }
     return ret;
 }
