@@ -1,8 +1,8 @@
 #ifndef TEST_MULTIPLICATIONS_H
 #define TEST_MULTIPLICATIONS_H
 
-#include "q-format.h"
-#include <gmock/gmock-matchers.h>
-#include <gtest/gtest.h>
+void test_operations_multiplication17();
+void test_operations_multiplication115();
+void test_operations_multiplication131();
 
 #endif // TEST_MULTIPLICATIONS_H

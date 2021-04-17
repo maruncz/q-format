@@ -1,8 +1,11 @@
 #ifndef TEST_DIVISION_H
 #define TEST_DIVISION_H
 
-#include "q-format.h"
-#include <gmock/gmock-matchers.h>
-#include <gtest/gtest.h>
+void test_operations_division17();
+void test_operations_division17_int();
+void test_operations_division115();
+void test_operations_division115_int();
+void test_operations_division131();
+void test_operations_division131_int();
 
 #endif // TEST_DIVISION_H

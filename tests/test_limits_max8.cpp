@@ -1,7 +1,8 @@
 #include "test_limits.h"
 
-TEST(limits, max8)
+void test_limits_max8()
 {
+    test_start(__func__);
     check_max<1, 1>();
     check_max<1, 2>();
     check_max<1, 3>();
@@ -30,4 +31,5 @@ TEST(limits, max8)
     check_max<6, 1>();
     check_max<6, 2>();
     check_max<7, 1>();
+    test_done(__func__);
 }

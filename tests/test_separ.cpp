@@ -1,5 +1,8 @@
 #include "test_separ.h"
+#include "q-format.h"
+#include "test_misc.h"
 #include <random>
+#include <sstream>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_fract()
 {
@@ -15,10 +18,10 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_fract()
         double d1 = f1.toDouble();
         q_t f2    = f1.getFrac();
         double d2 = d1 - static_cast<int_tt>(d1);
-
-        ASSERT_NEAR(f2.toDouble(), d2, 0.5)
-            << "i: " << i << "\nf1: " << f1.toDouble()
-            << "\nf2: " << f2.toDouble() << "\nd1: " << d1 << "\nd2: " << d2;
+        std::stringstream s;
+        s << "i: " << i << "\nf1: " << f1.toDouble()
+          << "\nf2: " << f2.toDouble() << "\nd1: " << d1 << "\nd2: " << d2;
+        assert_near_double(f2.toDouble(), d2, 0.5, s.str());
     }
 }
 
@@ -37,48 +40,51 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_int()
         q_t f2    = f1.getInt();
         double d2 = static_cast<int_tt>(d1);
 
-        ASSERT_NEAR(f2.toDouble(), d2, 0.5)
-            << "i: " << i << "\nf1: " << f1.toDouble()
-            << "\nf2: " << f2.toDouble() << "\nd1: " << d1 << "\nd2: " << d2;
+        std::stringstream s;
+        s << "i: " << i << "\nf1: " << f1.toDouble()
+          << "\nf2: " << f2.toDouble() << "\nd1: " << d1 << "\nd2: " << d2;
+        assert_near_double(f2.toDouble(), d2, 0.5, s.str());
     }
 }
 
-TEST(separation, fract17)
+void test_separation_fract17()
 {
+    test_start(__func__);
     random_fract<1, 7>();
+    test_done(__func__);
 }
 
-TEST(separation, fract115)
+void test_separation_fract115()
 {
+    test_start(__func__);
     random_fract<1, 15>();
+    test_done(__func__);
 }
 
-TEST(separation, fract131)
+void test_separation_fract131()
 {
+    test_start(__func__);
     random_fract<1, 31>();
+    test_done(__func__);
 }
 
-TEST(separation, fract26)
+void test_separation_int17()
 {
-    random_fract<2, 6>();
-}
-
-TEST(separation, int17)
-{
+    test_start(__func__);
     random_int<1, 7>();
+    test_done(__func__);
 }
 
-TEST(separation, int115)
+void test_separation_int115()
 {
+    test_start(__func__);
     random_int<1, 15>();
+    test_done(__func__);
 }
 
-TEST(separation, int131)
+void test_separation_int131()
 {
+    test_start(__func__);
     random_int<1, 31>();
-}
-
-TEST(separation, int26)
-{
-    random_int<2, 6>();
+    test_done(__func__);
 }

@@ -8,6 +8,9 @@
 #include "q-format.h"
 #include <iostream>
 
+/**
+ * @bug nefunguje protoze f2 se zaokrouhli na 0
+ */
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
 q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(int8_t exp) const
 {

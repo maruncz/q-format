@@ -1,7 +1,8 @@
 #include "test_limits.h"
 
-TEST(limits,min32)
+void test_limits_min32()
 {
+    test_start(__func__);
     check_min<1 ,16>();
     check_min<1 ,17>();
     check_min<1 ,18>();
@@ -378,4 +379,5 @@ TEST(limits,min32)
     check_min<30 ,1>();
     check_min<30 ,2>();
     check_min<31 ,1>();
+    test_done(__func__);
 }

@@ -1,8 +1,8 @@
 #ifndef TEST_ROOT_H
 #define TEST_ROOT_H
 
-#include "q-format.h"
-#include <gmock/gmock-matchers.h>
-#include <gtest/gtest.h>
+void test_root_sqrt17();
+void test_root_sqrt115();
+void test_root_sqrt131();
 
 #endif // TEST_ROOT_H

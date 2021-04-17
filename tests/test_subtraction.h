@@ -1,8 +1,8 @@
 #ifndef TEST_SUBTRACTION_H
 #define TEST_SUBTRACTION_H
 
-#include "q-format.h"
-#include <gmock/gmock-matchers.h>
-#include <gtest/gtest.h>
+void test_operations_subtraction17();
+void test_operations_subtraction115();
+void test_operations_subtraction131();
 
 #endif // TEST_SUBTRACTION_H
