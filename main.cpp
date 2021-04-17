@@ -13,7 +13,7 @@ void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
 int main()
 {
     using q_t = q<1, 7>;
-    for (int i = 1; i < 15; ++i)
+    for (uint8_t i = 1; i < 15; ++i)
     {
         q_t f1(0.515625);
         double d1 = f1.toDouble();

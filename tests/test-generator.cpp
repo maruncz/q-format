@@ -120,7 +120,7 @@ void print_tests()
     for (auto i = s.begin(); i != s.end(); ++i)
     {
         auto dist = std::distance(s.begin(), i);
-        if (!(dist % 128))
+        if ((dist % 128) == 0)
         {
             if (dist != 0)
             {

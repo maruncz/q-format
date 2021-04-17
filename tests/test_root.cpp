@@ -17,7 +17,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_sqrt()
         double d1 = f1.toDouble();
         q_t f2    = f1.sqrt();
         double d2 = sqrt(d1);
-        assert_near_double(f2.toDouble(), d2, q_t::eps().toDouble(), "");
+        assert_near(f2.toDouble(), d2, q_t::eps().toDouble(), "");
     }
 }
 

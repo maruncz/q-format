@@ -16,7 +16,7 @@ void random_doubleConversions()
         double d = dist(generator);
         q_t f(d);
 
-        assert_near_double(d, f.toDouble(), f.eps().toDouble(), "");
+        assert_near(d, f.toDouble(), f.eps().toDouble(), "");
     }
 }
 

@@ -44,7 +44,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q &f)
 }
 
 template <std::uint8_t T_numBits, std::uint8_t T_denBits>
-q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const int_tt &i)
+q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q::int_type &i)
 {
     q ret;
     ret.n = n / i;

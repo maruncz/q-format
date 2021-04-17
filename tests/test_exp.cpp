@@ -20,6 +20,6 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_pow_int()
         q_t f2      = f1.pow(f1, exp);
         double d2   = std::pow(d1, exp);
 
-        assert_near_double(f2.toDouble(), d2, q_t::eps().toDouble(), "");
+        assert_near(f2.toDouble(), d2, q_t::eps().toDouble(), "");
     }
 }

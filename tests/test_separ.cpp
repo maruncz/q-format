@@ -17,7 +17,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_fract()
         double d1 = f1.toDouble();
         q_t f2    = f1.getFrac();
         double d2 = d1 - static_cast<int_tt>(d1);
-        assert_near_double(f2.toDouble(), d2, 0.5, "");
+        assert_near(f2.toDouble(), d2, 0.5, "");
     }
 }
 
@@ -36,7 +36,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_int()
         q_t f2    = f1.getInt();
         double d2 = static_cast<int_tt>(d1);
 
-        assert_near_double(f2.toDouble(), d2, 0.5, "");
+        assert_near(f2.toDouble(), d2, 0.5, "");
     }
 }
 

@@ -6,19 +6,20 @@
 #include <cstdint>
 #include <limits>
 
-template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
     static_assert((T_numBits + T_denBits) <= 32, "moc velke");
-    using int_tt = int_t<T_numBits + T_denBits>;
 
 public:
+    using int_type = int_t<T_numBits + T_denBits>;
+
     q() = default;
     q(double f) { n = exp2(T_denBits) * f; }
     q(float f) { n = exp2f(T_denBits) * f; }
     q(long double f) { n = exp2l(T_denBits) * f; }
-    q(int_tt i) { n = i << T_denBits; }
+    q(int_type i) { n = i << T_denBits; }
 
-    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -42,15 +43,15 @@ public:
         }
     }
 
-    double      toDouble() const { return n / exp2(T_denBits); }
-    double      toFloat() const { return n / exp2f(T_denBits); }
+    double toDouble() const { return n / exp2(T_denBits); }
+    double toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
 
     q operator+(const q &f);
     q operator-(const q &f);
     q operator*(const q &f);
     q operator/(const q &f);
-    q operator/(const int_tt &i);
+    q operator/(const int_type &i);
 
     friend bool operator<(const q &f1, const q &f2) { return f1.n < f2.n; }
     friend bool operator>(const q &f1, const q &f2) { return f1.n > f2.n; }
@@ -61,7 +62,7 @@ public:
 
     q getInt() const
     {
-        q    ret(*this);
+        q ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (~(base() - 1ull));
@@ -71,7 +72,7 @@ public:
 
     q getFrac() const
     {
-        q    ret(*this);
+        q ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (base() - 1ull);
@@ -110,19 +111,19 @@ public:
         return ret;
     }
 
-    constexpr static int_t<T_denBits + 1> base() { return 1ull << T_denBits; }
+    constexpr static uint_t<T_denBits + 1> base() { return 1ull << T_denBits; }
 
     q sqrt() const;
 
     q pow(const q &f, uint8_t exp) const;
 
 private:
-    q root(int8_t exp) const;
+    q root(uint8_t exp) const;
 
-    int_tt n = 0;
+    int_type n = 0;
 
-    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
-    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
     friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
 

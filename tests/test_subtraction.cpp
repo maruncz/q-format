@@ -23,7 +23,7 @@ void random_subtractions()
         double d2 = f2.toDouble();
         q_t f3    = f1 - f2;
         double d3 = d1 - d2;
-        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
+        assert_near(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 

@@ -22,7 +22,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_additions()
         double d2 = f2.toDouble();
         q_t f3    = f1 + f2;
         double d3 = d1 + d2;
-        assert_near_double(d3, f3.toDouble(), f3.eps().toDouble(), "");
+        assert_near(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
@@ -33,7 +33,7 @@ void test_operations_addition()
         q<2, 6> f1(1.9);
         q<4, 4> f2(5.4);
         q<4, 4> f3 = f2 + q<4, 4>(f1);
-        assert_near_double(f3.toDouble(), 5.4 + 1.9, f3.eps().toDouble(), "");
+        assert_near(f3.toDouble(), 5.4 + 1.9, q<4, 4>::eps().toDouble(), "");
     }
     test_done(__func__);
 }
