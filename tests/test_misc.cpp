@@ -2,6 +2,9 @@
 
 #ifndef LIBOPENCM3
 #    include <iostream>
+#else
+#    include <cstring>
+#    include <uart.h>
 #endif
 
 void send_msg(const char *s)
@@ -9,7 +12,7 @@ void send_msg(const char *s)
 #ifndef LIBOPENCM3
     std::cout << s;
 #else
-
+    uart_send(s, strlen(s));
 #endif
 }
 

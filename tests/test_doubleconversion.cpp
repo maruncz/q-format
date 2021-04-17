@@ -24,6 +24,7 @@ void test_conversion_doubleConversion17()
 {
     test_start(__func__);
     random_doubleConversions<1, 7>();
+    test_done(__func__);
 }
 
 void test_conversion_doubleConversion115()

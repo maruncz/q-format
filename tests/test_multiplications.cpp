@@ -35,15 +35,21 @@ void random_multiplications()
 
 void test_operations_multiplication17()
 {
+    test_start(__func__);
     random_multiplications<1, 7>();
+    test_done(__func__);
 }
 
 void test_operations_multiplication115()
 {
+    test_start(__func__);
     random_multiplications<1, 15>();
+    test_done(__func__);
 }
 
 void test_operations_multiplication131()
 {
+    test_start(__func__);
     random_multiplications<1, 31>();
+    test_done(__func__);
 }
