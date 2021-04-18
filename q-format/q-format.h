@@ -50,6 +50,7 @@ public:
     q operator+(const q &f);
     q operator-(const q &f);
     q operator*(const q &f);
+    q operator*(const int_type &i);
     q operator/(const q &f);
     q operator/(const int_type &i);
 

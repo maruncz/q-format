@@ -18,9 +18,10 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(uint8_t exp) const
     q prev = ret;
     for (int i = 0; i < 10; ++i)
     {
-        q f1 = pow(ret, exp) - *this;
-        q f2 = q(static_cast<q::int_type>(exp)) * pow(ret, exp - 1);
-        ret  = ret - (f1 / f2);
+        q f1 = pow(ret, exp) - ret;
+        q f2 = pow(ret, exp - 1) * exp;
+        q f3 = f1/f2;
+        ret  = ret - f3;
         if (abs(ret - prev) < q::eps())
         {
             break;

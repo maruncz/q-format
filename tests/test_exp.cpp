@@ -23,3 +23,24 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_pow_int()
         assert_near(f2.toDouble(), d2, q_t::eps().toDouble(), "");
     }
 }
+
+void test_operations_exp17()
+{
+    test_start(__func__);
+    random_pow_int<1, 7>();
+    test_done(__func__);
+}
+
+void test_operations_exp115()
+{
+    test_start(__func__);
+    random_pow_int<1, 15>();
+    test_done(__func__);
+}
+
+void test_operations_exp131()
+{
+    test_start(__func__);
+    random_pow_int<1, 31>();
+    test_done(__func__);
+}

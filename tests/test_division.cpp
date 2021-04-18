@@ -45,7 +45,7 @@ void random_divisions_int()
         const typename q_t::int_type max = 1 / q_t::eps().toDouble();
         const typename q_t::int_type min = 1;
         std::uniform_int_distribution<typename q_t::int_type> tmp(min, max);
-        int_t<T_numBits + T_denBits> f2(tmp(generator));
+        typename q_t::int_type f2(tmp(generator));
         if (f2 == 0)
         {
             continue;

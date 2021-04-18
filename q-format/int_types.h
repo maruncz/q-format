@@ -30,6 +30,30 @@ using int_t = typename std::enable_if<T_numBits <=64,
         >::type>::type;
 // clang-format on
 
+// clang-format off
+template <std::uint8_t T_numBits>
+using uint_fast_t = typename std::enable_if<T_numBits <=64,
+    typename std::conditional<T_numBits <= 8, std::uint_fast8_t,
+        typename std::conditional<T_numBits <= 16, std::uint_fast16_t,
+            typename std::conditional<T_numBits <= 32, std::uint_fast32_t,
+                std::uint_fast64_t
+                >::type
+            >::type
+        >::type>::type;
+// clang-format on
+
+// clang-format off
+template <std::uint8_t T_numBits>
+using int_fast_t = typename std::enable_if<T_numBits <=64,
+    typename std::conditional<T_numBits <= 8, std::int_fast8_t,
+        typename std::conditional<T_numBits <= 16, std::int_fast16_t,
+            typename std::conditional<T_numBits <= 32, std::int_fast32_t,
+                std::int_fast64_t
+                >::type
+            >::type
+        >::type>::type;
+// clang-format on
+
 template<typename T> inline constexpr T signum(T x, std::false_type)
 {
     return T(0) < x;

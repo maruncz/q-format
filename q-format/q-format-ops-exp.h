@@ -15,7 +15,6 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::pow(const q &f,
             return q::max();
         }
         ret = q::max();
-        exp--;
     }
     else
     {
