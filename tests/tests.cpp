@@ -30,9 +30,11 @@ int main(int /*argc*/, char * /*argv*/[])
     test_operations_multiplication115();
     test_operations_multiplication131();*/
 
-    test_operations_multiplication17_int();
+    /*test_operations_multiplication17_int();
+    test_operations_multiplication115_int();
+    test_operations_multiplication131_int();*/
 
-    //test_root_sqrt17();
+    // test_root_sqrt17();
 
     /*test_conversion_doubleConversion17();
     test_conversion_doubleConversion115();
@@ -55,6 +57,8 @@ int main(int /*argc*/, char * /*argv*/[])
     test_separation_int17();
     test_separation_int115();
     test_separation_int131();*/
+
+    test_operations_exp1616();
 
     return 0;
 }
