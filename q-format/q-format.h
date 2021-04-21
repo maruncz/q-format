@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <limits>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
+template <std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
     static_assert((T_numBits + T_denBits) <= 32, "moc velke");
 
@@ -17,9 +17,16 @@ public:
     q(double f) { n = exp2(T_denBits) * f; }
     q(float f) { n = exp2f(T_denBits) * f; }
     q(long double f) { n = exp2l(T_denBits) * f; }
-    q(int_type i) { n = i << T_denBits; }
+    template <typename T, typename = typename std::enable_if<
+                              std::is_integral<T>::value>::type>
+    q(T i)
+    {
+        n = i << T_denBits;
+    }
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    q(const q &f) { n = f.n; }
+
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     explicit q(q<O_numBits, O_denBits> f)
     {
         if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
@@ -43,10 +50,43 @@ public:
         }
     }
 
-    double toDouble() const { return n / exp2(T_denBits); }
-    double toFloat() const { return n / exp2f(T_denBits); }
+    double      toDouble() const { return n / exp2(T_denBits); }
+    double      toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
 
+    q &operator=(const q &f)
+    {
+        n = f.n;
+        return *this;
+    }
+    q &operator=(double d)
+    {
+        *this = q(d);
+        return *this;
+    }
+    q &operator=(float d)
+    {
+        *this = q(d);
+        return *this;
+    }
+    q &operator=(long double d)
+    {
+        *this = q(d);
+        return *this;
+    }
+    template <typename T>
+    typename std::enable_if<std::is_integral<T>::value, q>::value operator=(T i)
+    {
+        *this = q(i);
+        return *this;
+    }
+
+    q operator-()
+    {
+        q ret;
+        ret.n = -n;
+        return ret;
+    }
     q operator+(const q &f);
     q operator-(const q &f);
     q operator*(const q &f);
@@ -63,7 +103,7 @@ public:
 
     q getInt() const
     {
-        q ret(*this);
+        q    ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (~(base() - 1ull));
@@ -73,7 +113,7 @@ public:
 
     q getFrac() const
     {
-        q ret(*this);
+        q    ret(*this);
         auto sign = signum(ret.n);
         ret.n *= sign;
         ret.n &= (base() - 1ull);
@@ -123,8 +163,8 @@ private:
 
     int_type n = 0;
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
+    template <std::uint8_t O_numBits, std::uint8_t O_denBits>
     friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
 
