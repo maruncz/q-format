@@ -50,6 +50,10 @@ public:
         }
     }
 
+    explicit operator double() const {return this->toDouble();}
+    explicit operator float() const {return this->toFloat();}
+    explicit operator long double() const {return this->toLongDouble();}
+
     double      toDouble() const { return n / exp2(T_denBits); }
     double      toFloat() const { return n / exp2f(T_denBits); }
     long double toLongDouble() const { return n / exp2l(T_denBits); }
