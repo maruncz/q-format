@@ -1,6 +1,7 @@
+#include "test_subtraction.h"
 #include "q-format-ops-basic.h"
 #include "q-format.h"
-#include <gtest/gtest.h>
+#include "test_misc.h"
 #include <random>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits>
@@ -22,21 +23,27 @@ void random_subtractions()
         double d2 = f2.toDouble();
         q_t f3    = f1 - f2;
         double d3 = d1 - d2;
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
+        assert_near(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
-TEST(subtraction, 1_7)
+void test_operations_subtraction17()
 {
+    test_start(__func__);
     random_subtractions<1, 7>();
+    test_done(__func__);
 }
 
-TEST(subtraction, 1_15)
+void test_operations_subtraction115()
 {
+    test_start(__func__);
     random_subtractions<1, 15>();
+    test_done(__func__);
 }
 
-TEST(subtraction, 1_31)
+void test_operations_subtraction131()
 {
+    test_start(__func__);
     random_subtractions<1, 31>();
+    test_done(__func__);
 }

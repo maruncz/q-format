@@ -1,5 +1,7 @@
+#include "test_division.h"
 #include "q-format-ops-basic.h"
-#include <gtest/gtest.h>
+#include "q-format.h"
+#include "test_misc.h"
 #include <random>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_divisions()
@@ -23,7 +25,7 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_divisions()
         q_t f3          = f1 / f2;
         double d3       = d1 / d2;
 
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
+        assert_near(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
@@ -52,36 +54,48 @@ void random_divisions_int()
         q_t f3          = f1 / f2;
         double d3       = d1 / d2;
 
-        ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
+        assert_near(d3, f3.toDouble(), f3.eps().toDouble(), "");
     }
 }
 
-TEST(division, 1_7)
+void test_operations_division17()
 {
+    test_start(__func__);
     random_divisions<1, 7>();
+    test_done(__func__);
 }
 
-TEST(division, 1_15)
+void test_operations_division17_int()
 {
-    random_divisions<1, 15>();
-}
-
-TEST(division, 1_31)
-{
-    random_divisions<1, 31>();
-}
-
-TEST(division, 1_7_int)
-{
+    test_start(__func__);
     random_divisions_int<1, 7>();
+    test_done(__func__);
 }
 
-TEST(division, 1_15_int)
+void test_operations_division115()
 {
+    test_start(__func__);
+    random_divisions<1, 15>();
+    test_done(__func__);
+}
+
+void test_operations_division115_int()
+{
+    test_start(__func__);
     random_divisions_int<1, 15>();
+    test_done(__func__);
 }
 
-TEST(division, 1_31_int)
+void test_operations_division131()
 {
+    test_start(__func__);
+    random_divisions<1, 31>();
+    test_done(__func__);
+}
+
+void test_operations_division131_int()
+{
+    test_start(__func__);
     random_divisions_int<1, 31>();
+    test_done(__func__);
 }
