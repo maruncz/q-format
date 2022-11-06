@@ -17,8 +17,3 @@ option(BUILD_TESTS FALSE)
 if(${BUILD_TESTS})
     add_subdirectory(tests)
 endif()
-
-option(BUILD_OLD_TESTS FALSE)
-if(${BUILD_OLD_TESTS})
-    add_subdirectory(tests-old)
-endif()

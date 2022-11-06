@@ -1,10 +1,12 @@
-#include "test_root.h"
+#include "q-format-ops-basic.h"
 #include "q-format-ops-root.h"
 #include "q-format.h"
-#include "test_misc.h"
 #include <random>
+#include <testcasebasic.h>
+#include <testmacros.h>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_sqrt()
+template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+testBase::result random_sqrt()
 {
     using q_t = q<T_numBits, T_denBits>;
     auto qmin = q_t::min().toDouble();
@@ -15,22 +17,19 @@ template<std::uint8_t T_numBits, std::uint8_t T_denBits> void random_sqrt()
     {
         q_t f1(dist(generator));
         double d1 = f1.toDouble();
-        q_t f2    = f1.sqrt();
+        q_t f2 = f1.sqrt();
         double d2 = sqrt(d1);
-        assert_near(f2.toDouble(), d2, q_t::eps().toDouble(), "");
+        ASSERT_NEAR(f2.toDouble(), d2, q_t::eps().toDouble());
     }
+    return testBase::result(true);
 }
 
-void test_root_sqrt17()
+TEST(sqrt, 1_7)
 {
-    test_start(__func__);
-    random_sqrt<1, 7>();
-    test_done(__func__);
+    return random_sqrt<1, 7>();
 }
 
-void test_root_sqrt115()
+TEST(sqrt, 1_15)
 {
-    test_start(__func__);
-    random_sqrt<1, 15>();
-    test_done(__func__);
+    return random_sqrt<1, 15>();
 }

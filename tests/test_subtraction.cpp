@@ -1,10 +1,11 @@
 #include "q-format-ops-basic.h"
 #include "q-format.h"
-#include <gtest/gtest.h>
 #include <random>
+#include <testcasebasic.h>
+#include <testmacros.h>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-void random_subtractions()
+testBase::result random_subtractions()
 {
     using q_t = q<T_numBits, T_denBits>;
     auto qmin = q_t::min().toDouble();
@@ -15,28 +16,29 @@ void random_subtractions()
     {
         q_t f1(dist(generator));
         const double d1 = f1.toDouble();
-        double max      = -std::min(qmax, qmax - d1);
-        double min      = -std::max(qmin, qmin - d1);
+        double max = -std::min(qmax, qmax - d1);
+        double min = -std::max(qmin, qmin - d1);
         std::uniform_real_distribution<double> tmp_dist(min, max);
         q_t f2(tmp_dist(generator));
         double d2 = f2.toDouble();
-        q_t f3    = f1 - f2;
+        q_t f3 = f1 - f2;
         double d3 = d1 - d2;
         ASSERT_NEAR(d3, f3.toDouble(), f3.eps().toDouble());
     }
+    return testBase::result(true);
 }
 
 TEST(subtraction, 1_7)
 {
-    random_subtractions<1, 7>();
+    return random_subtractions<1, 7>();
 }
 
 TEST(subtraction, 1_15)
 {
-    random_subtractions<1, 15>();
+    return random_subtractions<1, 15>();
 }
 
 TEST(subtraction, 1_31)
 {
-    random_subtractions<1, 31>();
+    return random_subtractions<1, 31>();
 }

@@ -1,6 +1,7 @@
-#include "q-format-ops-root.h"
+#include "q-format-ops-exp.h"
 #include "q-format.h"
 #include <bitset>
+#include <cmath>
 #include <iostream>
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits>
@@ -12,19 +13,24 @@ void print_q(const std::string &s, const q<T_numBits, T_denBits> &f)
 
 int main()
 {
-    using q_t = q<16,16>;
-    printf("%5s\t%10s\t%10s\t%10s\t%10s\t%10s\t%10s\n", "exp", "f1", "d1", "f2",
-           "d2", "diff", "reldiff");
-    for (uint8_t i = 0; i < 15; ++i)
+    using q_t = q<1,7>;
+    q_t f1{0.827181};
+    double d1 = f1.toDouble();
+    auto f2 = f1;
+    auto d2 = d1;
+    int it = 1;
+    while (true)
     {
-        q_t f1(0.5);
-        double d1      = f1.toDouble();
-        q_t f2         = f1.pow(f1, i);
-        double d2      = std::pow(d1, i);
-        double diff    = d2 - f2.toDouble();
-        double reldiff = diff / d2;
-        printf("%5hhu\t%10f\t%10f\t%10f\t%10f\t%10f\t%10f\n", i, f1.toDouble(),
-               d1, f2.toDouble(), d2, diff, reldiff);
+        f2 = f2 * f1;
+        d2 *= d1;
+        ++it;
+        auto diff = std::abs(d2 - f2.toDouble());
+        std::cout << it << '\t' << f2.toDouble() << '\t' << d2 << '\t' << diff
+                  << "\t\t" << q_t::eps().toDouble() << std::endl;
+        if (diff > q_t::eps().toDouble())
+        {
+            break;
+        }
     }
 
     return 0;
