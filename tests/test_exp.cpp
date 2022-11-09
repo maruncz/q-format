@@ -21,9 +21,9 @@ testBase::result random_pow_int()
         double d1 = f1.toDouble();
         q_t f2 = f1.pow(f1, exp);
         double d2 = std::pow(d1, exp);
-        std::array<char, 200> s;
+        std::array<char, 200> s{};
         snprintf(s.begin(), s.size(), "i: %i in: %f exp: %hhu\n", i, d1, exp);
-        ASSERT_NEAR(f2.toDouble(), d2, q_t::eps().toDouble());
+        ASSERT_NEAR_MSG(f2.toDouble(), d2, q_t::eps().toDouble(), s.data());
     }
     return testBase::result(true);
 }
@@ -41,7 +41,9 @@ testBase::result random_exp()
         auto exp = dist(generator);
         q_t f = q_t::exp(q_t(exp));
         double d = std::exp(exp);
-        ASSERT_NEAR(f.toDouble(), d, d*0.01);
+        std::array<char, 200> s{};
+        snprintf(s.begin(), s.size(), "i: %i in: %f exp: %f\n", i, d, exp);
+        ASSERT_NEAR_MSG(f.toDouble(), d, d*0.01, s.data());
     }
     return testBase::result(true);
 }

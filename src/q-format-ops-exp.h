@@ -42,7 +42,7 @@ q<T_numBits, T_denBits>::exp(const q<T_numBits, T_denBits> &f)
     for (int_tt i = 2; i < 100; ++i)
     {
         term *= f/i;
-        if (term <= q(0))
+        if (term == q(0))
         {
             break;
         }
