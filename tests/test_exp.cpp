@@ -28,27 +28,45 @@ testBase::result random_pow_int()
     return testBase::result(true);
 }
 
+template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+testBase::result random_exp()
+{
+    using q_t = q<T_numBits, T_denBits>;
+    std::default_random_engine generator;
+    auto min = std::log(q_t::eps().toDouble());
+    auto max = std::log(q_t::max().toDouble());
+    std::uniform_real_distribution<double> dist(min, max);
+    for (int i = 0; i < 10000; ++i)
+    {
+        auto exp = dist(generator);
+        q_t f = q_t::exp(q_t(exp));
+        double d = std::exp(exp);
+        ASSERT_NEAR(f.toDouble(), d, d*0.01);
+    }
+    return testBase::result(true);
+}
+
 TEST(exp, 1_7)
 {
-    return random_pow_int<1, 7>();
+    return random_exp<1, 7>();
 }
 
 TEST(exp, 1_15)
 {
-    return random_pow_int<1, 15>();
+    return random_exp<1, 15>();
 }
 
 TEST(exp, 8_8)
 {
-    return random_pow_int<8, 8>();
+    return random_exp<8, 8>();
 }
 
 TEST(exp, 16_16)
 {
-    return random_pow_int<16, 16>();
+    return random_exp<16, 16>();
 }
 
 TEST(exp, 1_31)
 {
-    return random_pow_int<1, 31>();
+    return random_exp<1, 31>();
 }

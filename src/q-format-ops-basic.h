@@ -4,7 +4,7 @@
 #include "q-format.h"
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator+(const q &f)
+q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator+(const q &f) const
 {
     q tmp;
     tmp.n = n + f.n;
@@ -52,7 +52,7 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q &f)
 }
 
 template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q::int_type &i)
+q<T_numBits, T_denBits> q<T_numBits, T_denBits>::operator/(const q::int_type &i) const
 {
     q ret;
     ret.n = n / i;

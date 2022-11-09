@@ -2,12 +2,12 @@
 #define QFORMAT_H
 
 #include "int_types.h"
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-class q
+template<std::uint8_t T_numBits, std::uint8_t T_denBits> class q
 {
     static_assert((T_numBits + T_denBits) <= 32, "moc velke");
 
@@ -15,12 +15,12 @@ public:
     using int_type = int_t<T_numBits + T_denBits>;
 
     q() = default;
-    explicit q(double f) { n = exp2(T_denBits) * f; }
-    explicit q(float f) { n = exp2f(T_denBits) * f; }
-    explicit q(long double f) { n = exp2l(T_denBits) * f; }
-    template<typename T,
-             typename = typename std::enable_if<std::is_integral<T>::value>::type>
-    explicit q(T i)
+    explicit q(double f) { n = std::exp2(T_denBits) * f; }
+    explicit q(float f) { n = std::exp2f(T_denBits) * f; }
+    explicit q(long double f) { n = std::exp2l(T_denBits) * f; }
+    template<typename T, typename = typename std::enable_if<
+                             std::is_integral<T>::value>::type>
+    q(T i)
     {
         n = i << T_denBits;
     }
@@ -37,7 +37,8 @@ public:
         else
         {
             constexpr auto shift = O_denBits - T_denBits;
-            int_t<std::max(T_numBits, O_numBits) + std::max(T_denBits, O_denBits)>
+            int_t<std::max(T_numBits, O_numBits) +
+                  std::max(T_denBits, O_denBits)>
                 tmp = f.n;
             if constexpr (O_denBits > T_denBits)
             {
@@ -54,9 +55,9 @@ public:
     explicit operator float() const { return this->toFloat(); }
     explicit operator long double() const { return this->toLongDouble(); }
 
-    double toDouble() const { return n / exp2(T_denBits); }
-    double toFloat() const { return n / exp2f(T_denBits); }
-    long double toLongDouble() const { return n / exp2l(T_denBits); }
+    double toDouble() const { return n / std::exp2(T_denBits); }
+    double toFloat() const { return n / std::exp2f(T_denBits); }
+    long double toLongDouble() const { return n / std::exp2l(T_denBits); }
 
     q &operator=(const q &f)
     {
@@ -91,12 +92,42 @@ public:
         ret.n = -n;
         return ret;
     }
-    q operator+(const q &f);
+    q operator+(const q &f) const;
     q operator-(const q &f);
     q operator*(const q &f);
     q operator*(const int_type &i);
     q operator/(const q &f);
-    q operator/(const int_type &i);
+    q operator/(const int_type &i) const;
+
+    q operator+=(const q &f)
+    {
+        *this = *this + f;
+        return *this;
+    }
+
+    q operator-=(const q &f)
+    {
+        *this = *this - f;
+        return *this;
+    }
+
+    q operator*=(const q &f)
+    {
+        *this = *this * f;
+        return *this;
+    }
+
+    q operator/=(const q &f)
+    {
+        *this = *this / f;
+        return *this;
+    }
+
+    q operator/=(const int_type &i)
+    {
+        *this = *this / i;
+        return *this;
+    }
 
     friend bool operator<(const q &f1, const q &f2) { return f1.n < f2.n; }
     friend bool operator>(const q &f1, const q &f2) { return f1.n > f2.n; }
@@ -144,21 +175,39 @@ public:
     constexpr static q max()
     {
         q ret;
-        ret.n = exp2(T_numBits + T_denBits - 1) - 1;
+        ret.n = std::exp2(T_numBits + T_denBits - 1) - 1;
         return ret;
     }
 
     constexpr static q min()
     {
         q ret;
-        ret.n = -exp2(T_numBits + T_denBits - 1);
+        ret.n = -std::exp2(T_numBits + T_denBits - 1);
         return ret;
     }
-
 
     q sqrt() const;
 
     q pow(const q &f, uint8_t exp) const;
+
+    template<typename T>
+    static constexpr typename std::enable_if<std::is_integral<T>::value,
+                                             q<T_numBits, T_denBits>>::value
+    exp2(T e)
+    {
+        q ret{1.0f};
+        if (e > 0)
+        {
+            ret.n << e;
+        }
+        else if (e < 0)
+        {
+            ret.n >> e;
+        }
+        return ret;
+    }
+
+    static constexpr q exp(const q &f);
 
 private:
     constexpr static uint_t<T_denBits + 1> base() { return 1ull << T_denBits; }
@@ -166,8 +215,7 @@ private:
 
     int_type n = 0;
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
-    friend class q;
+    template<std::uint8_t O_numBits, std::uint8_t O_denBits> friend class q;
     template<std::uint8_t O_numBits, std::uint8_t O_denBits>
     friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
