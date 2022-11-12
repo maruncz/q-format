@@ -26,7 +26,7 @@ public:
         n = i << D;
     }
 
-    q(const q &f) { n = f.n; }
+    constexpr q(const q &f) { n = f.n; }
 
     template<std::uint8_t N_O, std::uint8_t D_O> explicit q(q<N_O, D_O> f)
     {
@@ -53,9 +53,9 @@ public:
     explicit operator float() const { return this->toFloat(); }
     explicit operator long double() const { return this->toLongDouble(); }
 
-    double toDouble() const { return n / std::exp2(D); }
-    double toFloat() const { return n / std::exp2f(D); }
-    long double toLongDouble() const { return n / std::exp2l(D); }
+    constexpr double toDouble() { return double(n) / base(); }
+    constexpr double toFloat() const { return n / base(); }
+    constexpr long double toLongDouble() const { return n / base(); }
 
     q &operator=(const q &f)
     {
@@ -273,14 +273,14 @@ public:
     constexpr static q max()
     {
         q ret;
-        ret.n = std::exp2(N + D - 1) - 1;
+        ret.n = exp2_int<int_t<N + D + 1>>(N + D - 1) - 1;
         return ret;
     }
 
     constexpr static q min()
     {
         q ret;
-        ret.n = -std::exp2(N + D - 1);
+        ret.n = -exp2_int<int_t<N + D + 1>>(N + D - 1);
         return ret;
     }
 
@@ -339,7 +339,7 @@ private:
         return ret;
     }
 
-    template<typename T> static T exp2_int(int8_t e)
+    template<typename T> constexpr static T exp2_int(int8_t e)
     {
         T ret{1};
         if (e > 0)

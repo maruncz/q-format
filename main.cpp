@@ -12,7 +12,13 @@ void print_q(const std::string &s, const q<N, D> &f)
 
 int main()
 {
+    using q_t = q<4, 4>;
+    q_t fa{1.0625};
+    q_t fb{0.125};
+    q_t fc    = fa / fb;
+    double dc = fa.toDouble() / fb.toDouble();
 
+    std::cout << dc << '\t' << fc.toDouble() << '\n';
 
     return 0;
 }
