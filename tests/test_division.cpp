@@ -43,7 +43,7 @@ template<std::uint8_t N, std::uint8_t D> testBase::result random_divisions()
 template<std::uint8_t N, std::uint8_t D>
 testBase::result random_divisions_normals()
 {
-    static_assert(N == 1);
+    static_assert(N == 1, "this test is ment for numbers with N == 1");
     using q_t = q<N, D>;
     std::default_random_engine generator;
     std::uniform_real_distribution<double> dist(-1.0, 1.0);
@@ -64,12 +64,7 @@ testBase::result random_divisions_normals()
         }
         auto fc     = fa / fb;
         double ctrl = fa.toDouble() / fb.toDouble();
-
-        //        auto fint = fc.toDouble() * q_t::base();
-        //        auto dint = std::round(ctrl * q_t::base());
-
         ASSERT_NEAR(ctrl, fc.toDouble(), fc.eps().toDouble());
-        // ASSERT_NEAR(fint, dint, 0.5);
     }
     return testBase::result(true);
 }

@@ -7,7 +7,6 @@ set(TEST_SRCS
     test_division.cpp
     test_doubleconversion.cpp
     test_exp.cpp
-    test_root.cpp
     )
 
 #add_executable(tests ${TEST_SRCS})

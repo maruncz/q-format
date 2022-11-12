@@ -16,42 +16,32 @@ public:
     using int_type = int_t<N + D>;
 
     q() = default;
-    explicit q(double f) { n = std::exp2(D) * f; }
-    explicit q(float f) { n = std::exp2f(D) * f; }
-    explicit q(long double f) { n = std::exp2l(D) * f; }
+    explicit constexpr q(double f) { n = std::exp2(D) * f; }
+    explicit constexpr q(float f) { n = std::exp2f(D) * f; }
+    explicit constexpr q(long double f) { n = std::exp2l(D) * f; }
     template<typename T, typename = typename std::enable_if<
                              std::is_integral<T>::value>::type>
-    explicit q(T i)
+    explicit constexpr q(T i)
     {
-        n = i << D;
+        n = q::int_type(i) * base();
     }
 
     constexpr q(const q &f) { n = f.n; }
 
-    template<std::uint8_t N_O, std::uint8_t D_O> explicit q(q<N_O, D_O> f)
+    template<std::uint8_t N_O, std::uint8_t D_O>
+    explicit constexpr q(q<N_O, D_O> f)
     {
-        if constexpr ((N == N_O) && (D == D_O))
+        constexpr auto shift                           = D_O - D;
+        int_t<std::max(N, N_O) + std::max(D, D_O)> tmp = f.n;
+        if (D_O > D)
         {
-            n = f.n;
+            n = tmp >> shift;
         }
         else
         {
-            constexpr auto shift                           = D_O - D;
-            int_t<std::max(N, N_O) + std::max(D, D_O)> tmp = f.n;
-            if constexpr (D_O > D)
-            {
-                n = tmp >> shift;
-            }
-            else
-            {
-                n = tmp << -shift;
-            }
+            n = tmp << -shift;
         }
     }
-
-    explicit operator double() const { return this->toDouble(); }
-    explicit operator float() const { return this->toFloat(); }
-    explicit operator long double() const { return this->toLongDouble(); }
 
     constexpr double toDouble() { return double(n) / base(); }
     constexpr double toFloat() const { return n / base(); }
@@ -60,29 +50,6 @@ public:
     q &operator=(const q &f)
     {
         n = f.n;
-        return *this;
-    }
-
-    //    q &operator=(double d)
-    //    {
-    //        *this = q(d);
-    //        return *this;
-    //    }
-    //    q &operator=(float d)
-    //    {
-    //        *this = q(d);
-    //        return *this;
-    //    }
-    //    q &operator=(long double d)
-    //    {
-    //        *this = q(d);
-    //        return *this;
-    //    }
-
-    template<typename T>
-    typename std::enable_if<std::is_integral<T>::value, q>::value operator=(T i)
-    {
-        *this = q(i);
         return *this;
     }
 
@@ -205,26 +172,6 @@ public:
 
     friend bool operator!=(const q &f1, const q &f2) { return f1.n != f2.n; }
 
-    q getInt() const
-    {
-        q ret(*this);
-        auto sign = signum(ret.n);
-        ret.n *= sign;
-        ret.n &= (~(base() - 1ull));
-        ret.n *= sign;
-        return ret;
-    }
-
-    q getFrac() const
-    {
-        q ret(*this);
-        auto sign = signum(ret.n);
-        ret.n *= sign;
-        ret.n &= (base() - 1ull);
-        ret.n *= sign;
-        return ret;
-    }
-
     constexpr static q max(const q &f1, const q &f2)
     {
         return f1 > f2 ? f1 : f2;
@@ -249,26 +196,16 @@ public:
         q ret{1.0f};
         if (e > 0)
         {
-            ret.n << e;
+            ret.n <<= e;
         }
         else if (e < 0)
         {
-            ret.n >> e;
+            ret.n >>= e;
         }
         return ret;
     }
 
-    static constexpr q exp(const q &f)
-    {
-        if (f < q(0))
-        {
-            return q(1) / exp_impl(-f);
-        }
-        else
-        {
-            return exp_impl(f);
-        }
-    }
+    static constexpr q exp(const q &f) { return exp_impl(f); }
 
     constexpr static q max()
     {
@@ -286,30 +223,13 @@ public:
 
     constexpr static q abs(const q &f)
     {
-        q ret;
-        ret.n = std::abs(f.n);
-        return ret;
-    }
-
-    q pow(const q &f, uint8_t exp) const
-    {
-        q ret{f};
-        if constexpr (N == 1)
+        q ret = f;
+        if (ret.n < 0)
         {
-            if (exp == 0)
-            {
-                return q::max();
-            }
-        }
-        --exp;
-        while (exp--)
-        {
-            ret = ret * f;
+            ret = -ret;
         }
         return ret;
     }
-
-    q sqrt() const;
 
     constexpr static uint_t<D + 1> base() { return exp2_int<uint_t<D + 1>>(D); }
 
@@ -327,7 +247,7 @@ private:
         using int_tt = typename q::int_type;
         q ret(f + q(1));
         q term{f};
-        for (int_tt i = 2; i < 100; ++i)
+        for (uint8_t i = 2; i < 100; ++i)
         {
             term *= f / i;
             if (term == q(0))
@@ -339,7 +259,7 @@ private:
         return ret;
     }
 
-    template<typename T> constexpr static T exp2_int(int8_t e)
+    template<typename T=q> constexpr static T exp2_int(int8_t e)
     {
         T ret{1};
         if (e > 0)
@@ -353,13 +273,7 @@ private:
         return ret;
     }
 
-    q root(uint8_t exp) const;
-
     int_type n = 0;
-
-    template<std::uint8_t N_O, std::uint8_t D_O> friend class q;
-    template<std::uint8_t N_O, std::uint8_t D_O>
-    friend q<N_O, D_O> abs(const q<N_O, D_O> &f);
 };
 
 #endif // QFORMAT_H
