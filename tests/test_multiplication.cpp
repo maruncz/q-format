@@ -1,4 +1,3 @@
-#include "q-format-ops-basic.h"
 #include "q-format.h"
 #include <random>
 #include <testcasebasic.h>
@@ -7,10 +6,10 @@
 /**
  * @todo opravit limity
  */
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template<std::uint8_t N, std::uint8_t D>
 testBase::result random_multiplications()
 {
-    using q_t = q<T_numBits, T_denBits>;
+    using q_t = q<N, D>;
     auto qmin = q_t::min().toDouble();
     auto qmax = q_t::max().toDouble();
     std::default_random_engine generator;
@@ -37,10 +36,10 @@ testBase::result random_multiplications()
 /**
  * @todo opravit limity
  */
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
+template<std::uint8_t N, std::uint8_t D>
 testBase::result random_multiplications_int()
 {
-    using q_t = q<T_numBits, T_denBits>;
+    using q_t = q<N, D>;
     auto qmin = q_t::min().toDouble();
     auto qmax = q_t::max().toDouble();
     std::default_random_engine generator;

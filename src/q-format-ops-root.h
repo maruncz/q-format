@@ -3,15 +3,13 @@
 
 // https://math.stackexchange.com/questions/462443/calculating-non-integer-exponent
 
-#include "q-format-ops-basic.h"
-#include "q-format-ops-exp.h"
 #include "q-format.h"
 
 /**
  * @bug nefunguje protoze f2 se zaokrouhli na 0
  */
-template <std::uint8_t T_numBits, std::uint8_t T_denBits>
-q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(uint8_t exp) const
+template <std::uint8_t N, std::uint8_t D>
+q<N, D> q<N, D>::root(uint8_t exp) const
 {
     q ret(*this);
     ret    = max(q(1.0), ret / exp);
@@ -31,8 +29,8 @@ q<T_numBits, T_denBits> q<T_numBits, T_denBits>::root(uint8_t exp) const
     return ret;
 }
 
-template <std::uint8_t T_numBits, std::uint8_t T_denBits>
-q<T_numBits, T_denBits> q<T_numBits, T_denBits>::sqrt() const
+template <std::uint8_t N, std::uint8_t D>
+q<N, D> q<N, D>::sqrt() const
 {
     return root(2);
 }

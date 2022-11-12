@@ -1,25 +1,23 @@
-#include "q-format-ops-exp.h"
 #include "q-format.h"
 #include <cstdio>
 #include <random>
 #include <testcasebasic.h>
 #include <testmacros.h>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-testBase::result random_pow_int()
+template<std::uint8_t N, std::uint8_t D> testBase::result random_pow_int()
 {
-    using q_t = q<T_numBits, T_denBits>;
+    using q_t = q<N, D>;
     std::default_random_engine generator;
     std::uniform_int_distribution<uint8_t> dist2(1, 15);
     for (int i = 0; i < 10000; ++i)
     {
         uint8_t exp = dist2(generator);
-        auto qmin = -std::pow(q_t::max().toDouble(), 1.0 / exp);
-        auto qmax = std::pow(q_t::max().toDouble(), 1.0 / exp);
+        auto qmin   = -std::pow(q_t::max().toDouble(), 1.0 / exp);
+        auto qmax   = std::pow(q_t::max().toDouble(), 1.0 / exp);
         std::uniform_real_distribution<double> dist(qmin, qmax);
         q_t f1(dist(generator));
         double d1 = f1.toDouble();
-        q_t f2 = f1.pow(f1, exp);
+        q_t f2    = f1.pow(f1, exp);
         double d2 = std::pow(d1, exp);
         std::array<char, 200> s{};
         snprintf(s.begin(), s.size(), "i: %i in: %f exp: %hhu\n", i, d1, exp);
@@ -28,22 +26,21 @@ testBase::result random_pow_int()
     return testBase::result(true);
 }
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-testBase::result random_exp()
+template<std::uint8_t N, std::uint8_t D> testBase::result random_exp()
 {
-    using q_t = q<T_numBits, T_denBits>;
+    using q_t = q<N, D>;
     std::default_random_engine generator;
-    auto min = std::log(q_t::eps().toDouble());
+    auto min = std::max(std::log(q_t::eps().toDouble()), q_t::min().toDouble());
     auto max = std::log(q_t::max().toDouble());
     std::uniform_real_distribution<double> dist(min, max);
     for (int i = 0; i < 10000; ++i)
     {
         auto exp = dist(generator);
-        q_t f = q_t::exp(q_t(exp));
+        q_t f    = q_t::exp(q_t(exp));
         double d = std::exp(exp);
         std::array<char, 200> s{};
         snprintf(s.begin(), s.size(), "i: %i in: %f exp: %f\n", i, d, exp);
-        ASSERT_NEAR_MSG(f.toDouble(), d, d*0.01, s.data());
+        ASSERT_NEAR_MSG(f.toDouble(), d, d * 0.01, s.data());
     }
     return testBase::result(true);
 }
