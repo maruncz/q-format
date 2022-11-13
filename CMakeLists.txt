@@ -23,7 +23,7 @@ if(${BUILD_TESTS} OR ${BUILD_BENCHMARKS})
     else()
         FetchContent_Declare(
           test-fw
-          GIT_REPOSITORY git@gitlab.com:xbarin08/test-framework.git
+          GIT_REPOSITORY https://github.com/maruncz/test-framework.git
           GIT_TAG develop
         )
     endif()
