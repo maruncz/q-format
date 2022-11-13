@@ -2,128 +2,175 @@
 #define QFORMAT_H
 
 #include "int_types.h"
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <limits>
 
-template<std::uint8_t T_numBits, std::uint8_t T_denBits>
-class q
+template<std::uint8_t N, std::uint8_t D> class q
 {
-    static_assert((T_numBits + T_denBits) <= 32, "moc velke");
+    static_assert((N + D) <= 32, "unsupported width");
 
 public:
-    using int_type = int_t<T_numBits + T_denBits>;
+    using int_type = int_t<N + D>;
 
     q() = default;
-    explicit q(double f) { n = exp2(T_denBits) * f; }
-    explicit q(float f) { n = exp2f(T_denBits) * f; }
-    explicit q(long double f) { n = exp2l(T_denBits) * f; }
-    template<typename T,
-             typename = typename std::enable_if<std::is_integral<T>::value>::type>
-    explicit q(T i)
+    explicit constexpr q(double f) { n = std::exp2(D) * f; }
+    explicit constexpr q(float f) { n = std::exp2f(D) * f; }
+    explicit constexpr q(long double f) { n = std::exp2l(D) * f; }
+    template<typename T, typename = typename std::enable_if<
+                             std::is_integral<T>::value>::type>
+    explicit constexpr q(T i)
     {
-        n = i << T_denBits;
+        n = q::int_type(i) * base();
     }
 
-    q(const q &f) { n = f.n; }
+    constexpr q(const q &f) { n = f.n; }
 
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
-    explicit q(q<O_numBits, O_denBits> f)
+    template<std::uint8_t N_O, std::uint8_t D_O>
+    explicit constexpr q(q<N_O, D_O> f)
     {
-        if constexpr ((T_numBits == O_numBits) && (T_denBits == O_denBits))
+        constexpr auto shift                           = D_O - D;
+        int_t<std::max(N, N_O) + std::max(D, D_O)> tmp = f.n;
+        if (D_O > D)
         {
-            n = f.n;
+            n = tmp >> shift;
         }
         else
         {
-            constexpr auto shift = O_denBits - T_denBits;
-            int_t<std::max(T_numBits, O_numBits) + std::max(T_denBits, O_denBits)>
-                tmp = f.n;
-            if constexpr (O_denBits > T_denBits)
-            {
-                n = tmp >> shift;
-            }
-            else
-            {
-                n = tmp << -shift;
-            }
+            n = tmp << -shift;
         }
     }
 
-    explicit operator double() const { return this->toDouble(); }
-    explicit operator float() const { return this->toFloat(); }
-    explicit operator long double() const { return this->toLongDouble(); }
-
-    double toDouble() const { return n / exp2(T_denBits); }
-    double toFloat() const { return n / exp2f(T_denBits); }
-    long double toLongDouble() const { return n / exp2l(T_denBits); }
+    constexpr double toDouble() { return double(n) / base(); }
+    constexpr double toFloat() const { return n / base(); }
+    constexpr long double toLongDouble() const { return n / base(); }
 
     q &operator=(const q &f)
     {
         n = f.n;
         return *this;
     }
-    q &operator=(double d)
-    {
-        *this = q(d);
-        return *this;
-    }
-    q &operator=(float d)
-    {
-        *this = q(d);
-        return *this;
-    }
-    q &operator=(long double d)
-    {
-        *this = q(d);
-        return *this;
-    }
-    template<typename T>
-    typename std::enable_if<std::is_integral<T>::value, q>::value operator=(T i)
-    {
-        *this = q(i);
-        return *this;
-    }
 
-    q operator-()
+    q operator-() const
     {
         q ret;
         ret.n = -n;
         return ret;
     }
-    q operator+(const q &f);
-    q operator-(const q &f);
-    q operator*(const q &f);
-    q operator*(const int_type &i);
-    q operator/(const q &f);
-    q operator/(const int_type &i);
+    q operator+(const q &f) const
+    {
+        q tmp;
+        tmp.n = n + f.n;
+        return tmp;
+    }
+
+    q operator-(const q &f) const
+    {
+        q tmp;
+        tmp.n = n - f.n;
+        return tmp;
+    }
+
+    q operator*(const q &f) const
+    {
+        constexpr uint8_t numBits = 2 * (N + D);
+        using int_tt              = int_t<numBits>;
+        int_tt tmp                = int_tt(n) * int_tt(f.n);
+        tmp                       = tmp >> D;
+        q ret;
+        ret.n = tmp;
+        return ret;
+    }
+
+    q operator*(const int_type &i) const
+    {
+        q ret;
+        ret.n = n * i;
+        return ret;
+    }
+
+    q operator/(const q &f) const { return div_std(*this, f); }
+
+    static q div_no_rounding(const q &a, const q &b)
+    {
+        constexpr uint8_t numBits = 2 * (N + D);
+        using int_tt              = int_t<numBits>;
+        int_tt tmp_n              = a.n;
+        tmp_n                     = tmp_n * exp2_int<int_tt>(D);
+        q ret;
+        ret.n = tmp_n / b.n;
+        return ret;
+    }
+
+    static q div_std(const q &a, const q &b)
+    {
+        using std::abs;
+        constexpr uint8_t numBits = 2 * (N + D);
+        using int_tt              = int_t<numBits>;
+        int_tt tmp_n              = abs(a.n);
+        tmp_n                     = tmp_n * exp2_int<int_tt>(D + 1);
+        tmp_n /= abs(b.n);
+        tmp_n++;
+        tmp_n /= 2;
+        q ret;
+        ret.n = tmp_n;
+        if (std::signbit(a.n) ^ std::signbit(b.n))
+        {
+            ret = -ret;
+        }
+        return ret;
+    }
+
+    q operator/(const int_type &i) const
+    {
+        q ret;
+        ret.n = n / i;
+        return ret;
+    }
+
+    q operator+=(const q &f)
+    {
+        *this = *this + f;
+        return *this;
+    }
+
+    q operator-=(const q &f)
+    {
+        *this = *this - f;
+        return *this;
+    }
+
+    q operator*=(const q &f)
+    {
+        *this = *this * f;
+        return *this;
+    }
+
+    q operator/=(const q &f)
+    {
+        *this = *this / f;
+        return *this;
+    }
+
+    q operator/=(const int_type &i)
+    {
+        *this = *this / i;
+        return *this;
+    }
 
     friend bool operator<(const q &f1, const q &f2) { return f1.n < f2.n; }
+
     friend bool operator>(const q &f1, const q &f2) { return f1.n > f2.n; }
+
     friend bool operator<=(const q &f1, const q &f2) { return f1.n <= f2.n; }
+
     friend bool operator>=(const q &f1, const q &f2) { return f1.n >= f2.n; }
+
     friend bool operator==(const q &f1, const q &f2) { return f1.n == f2.n; }
+
     friend bool operator!=(const q &f1, const q &f2) { return f1.n != f2.n; }
-
-    q getInt() const
-    {
-        q ret(*this);
-        auto sign = signum(ret.n);
-        ret.n *= sign;
-        ret.n &= (~(base() - 1ull));
-        ret.n *= sign;
-        return ret;
-    }
-
-    q getFrac() const
-    {
-        q ret(*this);
-        auto sign = signum(ret.n);
-        ret.n *= sign;
-        ret.n &= (base() - 1ull);
-        ret.n *= sign;
-        return ret;
-    }
 
     constexpr static q max(const q &f1, const q &f2)
     {
@@ -136,40 +183,96 @@ public:
 
     constexpr static q eps()
     {
-        q<T_numBits, T_denBits> tmp;
+        q tmp;
         tmp.n = 1;
         return tmp;
     }
 
+    template<typename T>
+    static constexpr
+        typename std::enable_if<std::is_integral<T>::value, q<N, D>>::type
+        exp2(T e)
+    {
+        q ret{1.0f};
+        if (e > 0)
+        {
+            ret.n <<= e;
+        }
+        else if (e < 0)
+        {
+            ret.n >>= e;
+        }
+        return ret;
+    }
+
+    static constexpr q exp(const q &f) { return exp_impl(f); }
+
     constexpr static q max()
     {
         q ret;
-        ret.n = exp2(T_numBits + T_denBits - 1) - 1;
+        ret.n = exp2_int<int_t<N + D + 1>>(N + D - 1) - 1;
         return ret;
     }
 
     constexpr static q min()
     {
         q ret;
-        ret.n = -exp2(T_numBits + T_denBits - 1);
+        ret.n = -exp2_int<int_t<N + D + 1>>(N + D - 1);
         return ret;
     }
 
+    constexpr static q abs(const q &f)
+    {
+        q ret = f;
+        if (ret.n < 0)
+        {
+            ret = -ret;
+        }
+        return ret;
+    }
 
-    q sqrt() const;
-
-    q pow(const q &f, uint8_t exp) const;
+    constexpr static uint_t<D + 1> base() { return exp2_int<uint_t<D + 1>>(D); }
 
 private:
-    constexpr static uint_t<T_denBits + 1> base() { return 1ull << T_denBits; }
-    q root(uint8_t exp) const;
+    constexpr static q exp_impl(const q &f)
+    {
+        if (f == q(0))
+        {
+            return q(1);
+        }
+        if (f == q(1))
+        {
+            return q(M_E);
+        }
+        q ret(f + q(1));
+        q term{f};
+        for (uint8_t i = 2; i < 100; ++i)
+        {
+            term *= f / i;
+            if (term == q(0))
+            {
+                break;
+            }
+            ret += term;
+        }
+        return ret;
+    }
+
+    template<typename T=q> constexpr static T exp2_int(int8_t e)
+    {
+        T ret{1};
+        if (e > 0)
+        {
+            ret <<= e;
+        }
+        else if (e < 0)
+        {
+            ret >>= e;
+        }
+        return ret;
+    }
 
     int_type n = 0;
-
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
-    friend class q;
-    template<std::uint8_t O_numBits, std::uint8_t O_denBits>
-    friend q<O_numBits, O_denBits> abs(const q<O_numBits, O_denBits> &f);
 };
 
 #endif // QFORMAT_H
