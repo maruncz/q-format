@@ -10,7 +10,7 @@
 
 template<std::uint8_t N, std::uint8_t D> class q
 {
-    static_assert((N + D) <= 32, "moc velke");
+    static_assert((N + D) <= 32, "unsupported width");
 
 public:
     using int_type = int_t<N + D>;
