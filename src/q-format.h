@@ -244,7 +244,6 @@ private:
         {
             return q(M_E);
         }
-        using int_tt = typename q::int_type;
         q ret(f + q(1));
         q term{f};
         for (uint8_t i = 2; i < 100; ++i)
