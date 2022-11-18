@@ -1,4 +1,4 @@
-#include "q-format.h"
+#include "qfm/qfm.hpp"
 #include <random>
 #include <testcasebasic.h>
 #include <testmacros.h>
@@ -9,7 +9,7 @@
 template<std::uint8_t N, std::uint8_t D>
 testBase::result random_multiplications()
 {
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     auto qmin = q_t::min().toDouble();
     auto qmax = q_t::max().toDouble();
     std::default_random_engine generator;
@@ -39,7 +39,7 @@ testBase::result random_multiplications()
 template<std::uint8_t N, std::uint8_t D>
 testBase::result random_multiplications_int()
 {
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     auto qmin = q_t::min().toDouble();
     auto qmax = q_t::max().toDouble();
     std::default_random_engine generator;

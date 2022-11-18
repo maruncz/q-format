@@ -1,4 +1,4 @@
-#include "q-format.h"
+#include "qfm/qfm.hpp"
 #include <benchmarkbasic.h>
 #include <cmath>
 
@@ -12,8 +12,8 @@ BENCHMARK(exp, float_std)
 
 BENCHMARK(exp, q_16_16)
 {
-    q<16, 16> in{5.0f};
+    qfm::q<16, 16> in{5.0f};
     DoNotOptimize(in);
-    auto res = q<16, 16>::exp(in);
+    auto res = qfm::q<16, 16>::exp(in);
     DoNotOptimize(res);
 }

@@ -9,13 +9,9 @@ set(TEST_SRCS
     test_exp.cpp
     )
 
-#add_executable(tests ${TEST_SRCS})
-#target_include_directories(tests INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-#target_link_libraries(tests PRIVATE q-format test-fw-tests-main)
-
 foreach(test ${TEST_SRCS})
     get_filename_component(TName ${test} NAME_WE)
     add_executable(${TName} ${test})
-    target_link_libraries(${TName} PRIVATE q-format test-fw-tests-main)
+    target_link_libraries(${TName} PRIVATE qfm::qfm test-fw-tests-main)
     add_test(NAME ${TName} COMMAND ${TName})
 endforeach()

@@ -1,4 +1,4 @@
-#include "q-format.h"
+#include "qfm/qfm.hpp"
 #include <random>
 #include <testcasebasic.h>
 #include <testmacros.h>
@@ -6,7 +6,7 @@
 template<std::uint8_t N, std::uint8_t D> testBase::result random_divisions()
 {
     using std::abs;
-    using q_t           = q<N, D>;
+    using q_t           = qfm::q<N, D>;
     constexpr auto qmax = q_t::max().toDouble();
     constexpr auto qmin = q_t::min().toDouble();
     std::default_random_engine generator;
@@ -44,7 +44,7 @@ template<std::uint8_t N, std::uint8_t D>
 testBase::result random_divisions_normals()
 {
     static_assert(N == 1, "this test is ment for numbers with N == 1");
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     std::default_random_engine generator;
     std::uniform_real_distribution<double> dist(-1.0, 1.0);
     for (int i = 0; i < 10000; ++i)
@@ -71,7 +71,7 @@ testBase::result random_divisions_normals()
 
 template<std::uint8_t N, std::uint8_t D> testBase::result random_divisions_int()
 {
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     auto qmin = q_t::min().toDouble();
     auto qmax = q_t::max().toDouble();
     std::default_random_engine generator;

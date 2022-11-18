@@ -1,4 +1,4 @@
-#include "q-format.h"
+#include "qfm/qfm.hpp"
 #include <cstdio>
 #include <random>
 #include <testcasebasic.h>
@@ -6,7 +6,7 @@
 
 template<std::uint8_t N, std::uint8_t D> testBase::result random_pow_int()
 {
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     std::default_random_engine generator;
     std::uniform_int_distribution<uint8_t> dist2(1, 15);
     for (int i = 0; i < 10000; ++i)
@@ -28,7 +28,7 @@ template<std::uint8_t N, std::uint8_t D> testBase::result random_pow_int()
 
 template<std::uint8_t N, std::uint8_t D> testBase::result random_exp()
 {
-    using q_t = q<N, D>;
+    using q_t = qfm::q<N, D>;
     std::default_random_engine generator;
     auto min = std::max(std::log(q_t::eps().toDouble()), q_t::min().toDouble());
     auto max = std::log(q_t::max().toDouble());

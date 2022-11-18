@@ -6,10 +6,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(src)
+add_subdirectory(include)
 
 option(BUILD_TESTS FALSE)
 option(BUILD_BENCHMARKS FALSE)
+option(BUILD_ACCURACY FALSE)
 option(TEST_FW_LOCAL FALSE)
 set(TEST_FW_DIR "" CACHE PATH "")
 
@@ -38,4 +39,8 @@ endif()
 
 if(${BUILD_BENCHMARKS})
     add_subdirectory(benchmarks)
+endif()
+
+if(${BUILD_ACCURACY})
+    add_subdirectory(accuracy/)
 endif()
