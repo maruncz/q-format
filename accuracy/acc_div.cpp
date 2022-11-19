@@ -2,7 +2,6 @@
 #include "qfm/qfm.hpp"
 #include <cmath>
 #include <fstream>
-#include <limits>
 #include <sstream>
 
 template<int N, int D> void run()
@@ -18,15 +17,24 @@ template<int N, int D> void run()
     }
 
     std::stringstream s;
-    s << "acc_mul-" << N << '-' << D << ".txt";
+    s << "acc_div-" << N << '-' << D << ".txt";
     std::ofstream f(s.str());
 
     for (auto a = min; a <= max; a += eps)
     {
         for (auto b = min; b <= max; b += eps)
         {
-            T c      = T(a) * T(b);
-            double d = a * b;
+            if (std::abs(b) < T::eps().toDouble())
+            {
+                f << a << '\t' << b << '\t'
+                  << std::numeric_limits<double>::quiet_NaN() << '\t'
+                  << std::numeric_limits<double>::quiet_NaN() << '\t'
+                  << std::numeric_limits<double>::quiet_NaN() << '\t'
+                  << std::numeric_limits<double>::quiet_NaN() << '\n';
+                continue;
+            }
+            T c      = T(a) / T(b);
+            double d = a / b;
             if ((d >= min) && (d <= max))
             {
                 f << a << '\t' << b << '\t' << c.toDouble() << '\t' << d << '\t'

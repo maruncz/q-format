@@ -20,11 +20,27 @@ public:
     using int_type = int_t<N + D>;
 
     q_base() = default;
-    explicit constexpr q_base(double f) { n = base() * f; }
-    explicit constexpr q_base(float f) { n = base() * f; }
-    explicit constexpr q_base(long double f) { n = base() * f; }
-    template<typename T, typename = typename std::enable_if<
-                             std::is_integral<T>::value>::type>
+
+    template<typename T,
+             std::enable_if_t<std::is_floating_point<T>::value> * = nullptr>
+    explicit constexpr q_base(T f)
+    {
+        using int_tt = int_t<1 + N + D>;
+        int_tt tmp   = base() * f * 2.0;
+        if (f > 0)
+        {
+            tmp++;
+        }
+        else
+        {
+            tmp--;
+        }
+        tmp /= 2;
+        n = tmp;
+    }
+
+    template<typename T,
+             std::enable_if_t<std::is_integral<T>::value> * = nullptr>
     explicit constexpr q_base(T i)
     {
         n = q_base::int_type(i) * base();
@@ -138,10 +154,30 @@ public:
         return ret;
     }
 
-    q_base operator/(const int_type &i) const
+    q_base operator/(const int_type &i) const { return div_int_std(*this, i); }
+
+    static q_base div_int_no_rounding(const q_base &a, const int_type &i)
     {
         q_base ret;
-        ret.n = n / i;
+        ret.n = a.n / i;
+        return ret;
+    }
+
+    static q_base div_int_std(const q_base &a, const int_type &i)
+    {
+        using std::abs;
+        using int_tt = int_t<1 + N + D>;
+        int_tt tmp   = abs(a.n);
+        tmp *= 2;
+        tmp /= abs(i);
+        tmp++;
+        tmp /= 2;
+        q_base ret;
+        ret.n = tmp;
+        if (std::signbit(a.n) ^ std::signbit(i))
+        {
+            ret = -ret;
+        }
         return ret;
     }
 
@@ -299,7 +335,8 @@ private:
         q_base term{f};
         for (uint8_t i = 2; i < 100; ++i)
         {
-            term *= f / i;
+            q_base tmp = f / i;
+            term *= tmp;
             if (term == q_base(0))
             {
                 break;

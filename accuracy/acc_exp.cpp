@@ -6,9 +6,11 @@
 
 template<int N, int D> void run()
 {
-    using T  = qfm::q<N, D>;
-    auto max = T(std::log(T::max().toDouble()));
-    auto min = T(std::log(T::eps().toDouble()));
+    using T   = qfm::q<N, D>;
+    auto dmax = std::log(T::max().toDouble() - (T::eps().toDouble() / 2));
+    auto dmin = std::log(T::eps().toDouble() + (T::eps().toDouble() / 2));
+    T max = T(std::min(dmax, T::max().toDouble() - (T::eps().toDouble() / 2)));
+    T min = T(std::max(dmin, T::min().toDouble() + (T::eps().toDouble() / 2)));
     auto eps = T::eps();
 
     while (((max.toDouble() - min.toDouble()) / eps.toDouble()) > 100000)

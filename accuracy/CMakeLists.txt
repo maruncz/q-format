@@ -16,6 +16,7 @@ set(ACC_SRCS_UNARY
 
 set(ACC_SRCS_BINARY
     acc_mul.cpp
+    acc_div.cpp
     )
 
 set(ACC_ARGS
