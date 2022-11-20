@@ -21,7 +21,7 @@ template<int N, int D> void run()
     std::stringstream s;
     s << "acc_exp-" << N << '-' << D << ".txt";
     std::ofstream f(s.str());
-    for (T e = min; e <= max; e += eps)
+    for (T e = min; e < max; e += eps)
     {
         T q      = T::exp(e);
         double d = std::exp(e.toDouble());

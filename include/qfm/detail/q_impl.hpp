@@ -48,17 +48,27 @@ public:
 
     constexpr q_base(const q_base &f) { n = f.n; }
 
-    template<int N_O, int D_O> explicit constexpr q_base(q_base<N_O, D_O> f)
+    template<int N_O, int D_O, std::enable_if_t<(D_O <= D)> * = nullptr>
+    explicit constexpr q_base(q_base<N_O, D_O> f)
     {
-        constexpr auto shift                           = D_O - D;
+        constexpr auto shift                           = D - D_O;
         int_t<std::max(N, N_O) + std::max(D, D_O)> tmp = f.n;
-        if (D_O > D)
+        n                                              = tmp << shift;
+    }
+
+    template<int N_O, int D_O, std::enable_if_t<(D_O > D)> * = nullptr>
+    explicit constexpr q_base(q_base<N_O, D_O> f)
+    {
+        constexpr auto shift = D_O - D;
+        using std::abs;
+        int_t<std::max(N, N_O) + D_O> tmp = f.n;
+        tmp                               = abs(tmp);
+        tmp += 1l << (shift - 1);
+        tmp >>= shift;
+        n = tmp;
+        if (f.n < 0)
         {
-            n = tmp >> shift;
-        }
-        else
-        {
-            n = tmp << -shift;
+            n = -n;
         }
     }
 
@@ -106,12 +116,12 @@ public:
         tmp        = tmp >> (D - 1);
         tmp++;
         tmp /= 2;
-        q_base ret;
-        ret.n = tmp;
         if (std::signbit(a.n) ^ std::signbit(b.n))
         {
-            ret = -ret;
+            tmp = -tmp;
         }
+        q_base ret;
+        ret.n = tmp;
         return ret;
     }
 
@@ -140,17 +150,17 @@ public:
         using std::abs;
         constexpr uint8_t numBits = 2 * (N + D);
         using int_tt              = int_t<numBits>;
-        int_tt tmp_n              = abs(a.n);
+        int_tt tmp_n              = abs(int_tt(a.n));
         tmp_n                     = tmp_n * exp2_int<int_tt>(D + 1);
-        tmp_n /= abs(b.n);
+        tmp_n /= abs(int_tt(b.n));
         tmp_n++;
         tmp_n /= 2;
-        q_base ret;
-        ret.n = tmp_n;
         if (std::signbit(a.n) ^ std::signbit(b.n))
         {
-            ret = -ret;
+            tmp_n = -tmp_n;
         }
+        q_base ret;
+        ret.n = tmp_n;
         return ret;
     }
 
@@ -167,9 +177,9 @@ public:
     {
         using std::abs;
         using int_tt = int_t<1 + N + D>;
-        int_tt tmp   = abs(a.n);
+        int_tt tmp   = abs(int_tt(a.n));
         tmp *= 2;
-        tmp /= abs(i);
+        tmp /= abs(int_tt(i));
         tmp++;
         tmp /= 2;
         q_base ret;
@@ -281,7 +291,7 @@ public:
     }
 
     template<typename T = q_base>
-    static constexpr typename std::enable_if<(N > 1), T>::type
+    static constexpr typename std::enable_if<(N >= 3), T>::type
     exp(const q_base &f)
     {
         if (f == q_base(0))
@@ -296,10 +306,10 @@ public:
     }
 
     template<typename T = q_base>
-    static constexpr typename std::enable_if<(N <= 1), T>::type
+    static constexpr typename std::enable_if<(N < 3), T>::type
     exp(const q_base &f)
     {
-        return exp_impl(f);
+        return exp_impl_less_than_one_two_step(f);
     }
 
     constexpr static q_base max()
@@ -328,6 +338,30 @@ public:
 
     constexpr static uint_t<D + 1> base() { return exp2_int<uint_t<D + 1>>(D); }
 
+protected:
+    template<int N_A, int D_A, int N_B, int D_B>
+    static constexpr q_base<N_A + N_B, D_A + D_B> mul(q_base<N_A, D_A> a,
+                                                      q_base<N_B, D_B> b)
+    {
+        q_base<N_A + N_B, D_A + D_B> ret;
+        ret.n = a.n;
+        ret.n *= b.n;
+        return ret;
+    }
+
+    template<int N_A, int D_A, int N_B, int D_B>
+    static constexpr q_base<N_A + D_B, D_A + N_B> div(q_base<N_A, D_A> a,
+                                                      q_base<N_B, D_B> b)
+    {
+        using int_tt = int_t<N_A + D_B + D_A + N_B>;
+        int_tt tmp   = a.n;
+        tmp *= exp2_int<int_tt>(D_A + D_B);
+        tmp /= b.n;
+        q_base<N_A + D_B, D_A + N_B> ret;
+        ret.n = tmp;
+        return ret;
+    }
+
 private:
     constexpr static q_base exp_impl(const q_base &f)
     {
@@ -348,20 +382,64 @@ private:
 
     constexpr static q_base exp_impl_less_than_one(const q_base &f)
     {
-        using q_tmp = q_base<std::max(N, 2), D>;
+        using q_tmp = q_base<std::max(N, 3), D - std::max(0, 3 - N)>;
         const q_tmp exp{f};
-        q_tmp ret(exp + q_tmp(1));
-        q_tmp term{exp};
+        q_tmp tmpret(exp + q_tmp(1));
+        q_tmp tmpterm{exp};
         for (uint8_t i = 2; i < 100; ++i)
         {
-            term *= exp / i;
-            if (term == q_tmp(0))
+            auto tmp = exp / i;
+            tmpterm *= tmp;
+            tmpret += tmpterm;
+            if (tmpterm == q_tmp(0))
             {
+                ++i;
                 break;
             }
-            ret += term;
         }
-        return q_base(ret);
+        return q_base(tmpret);
+    }
+
+    constexpr static q_base exp_impl_less_than_one_two_step(const q_base &f)
+    {
+        using std::abs;
+        q_base ret{0};
+        q_base term{0};
+        uint8_t i = 2;
+        {
+            using q_tmp = q_base<std::max(N, 3), D - std::max(0, 3 - N)>;
+            const q_tmp exp{f};
+            q_tmp tmpret(exp + q_tmp(1));
+            q_tmp tmpterm{exp};
+            for (; i < 100; ++i)
+            {
+                auto tmp = exp / i;
+                tmpterm *= tmp;
+                tmpret += tmpterm;
+                if (q_tmp::abs(tmpret) < q_tmp(1))
+                {
+                    ++i;
+                    break;
+                }
+            }
+            ret  = q_base(tmpret);
+            term = q_base(tmpterm);
+        }
+
+        {
+            for (; i < 100; ++i)
+            {
+                auto tmp = f / i;
+                term *= tmp;
+                if (term == q_base(0))
+                {
+                    break;
+                }
+                ret += term;
+            }
+        }
+
+        return ret;
     }
 
     template<typename T>

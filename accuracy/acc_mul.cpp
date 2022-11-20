@@ -25,10 +25,10 @@ template<int N, int D> void run()
     {
         for (auto b = min; b <= max; b += eps)
         {
-            T c      = T(a) * T(b);
             double d = a * b;
             if ((d >= min) && (d <= max))
             {
+                T c = T(a) * T(b);
                 f << a << '\t' << b << '\t' << c.toDouble() << '\t' << d << '\t'
                   << rel_prec(d, c) << '\t'
                   << abs_prec(d, c) / T::eps().toDouble() << '\n';

@@ -40,8 +40,8 @@ template<std::uint8_t N, std::uint8_t D> testBase::result random_exp()
         double d = std::exp(exp);
         std::array<char, 200> s{};
         snprintf(s.begin(), s.size(), "i: %i in: %f exp: %f\n", i, d, exp);
-        double rel_tol = 6 * std::exp2(-D+1);
-        ASSERT_NEAR_MSG(f.toDouble(), d, d * rel_tol, s.data());
+        double rel_tol = 6 * std::exp2(-D + 1);
+        ASSERT_NEAR_MSG(f.toDouble(), d, f.eps().toDouble() * 4, s.data());
     }
     return testBase::result(true);
 }

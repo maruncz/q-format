@@ -7,6 +7,7 @@ set(TEST_SRCS
     test_division.cpp
     test_doubleconversion.cpp
     test_exp.cpp
+    test_rounding.cpp
     )
 
 foreach(test ${TEST_SRCS})
