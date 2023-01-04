@@ -6,13 +6,13 @@
 namespace qfm
 {
 
-template<int N, int D> class q : public q_base<N, D>
+template<int I, int F> class q : public q_base<I, F>
 {
-    static_assert((N + D) <= 32, "unsupported width");
+    static_assert((I + F) <= 32, "unsupported width");
 
 public:
-    using q_base<N, D>::q_base;
-    q(const q_base<N, D> &f) : q_base<N, D>(f) {}
+    using q_base<I, F>::q_base;
+    q(const q_base<I, F> &f) : q_base<I, F>(f) {}
 };
 
 } // namespace qfm

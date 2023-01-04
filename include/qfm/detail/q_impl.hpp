@@ -8,16 +8,16 @@
 namespace qfm
 {
 
-template<int N, int D> class q_base
+template<int I, int F> class q_base
 {
-    static_assert((N + D) <= 64, "unsupported width");
-    static_assert(N >= 1, "not enough integer bits");
-    static_assert(D >= 1, "not enough fractional bits");
+    static_assert((I + F) <= 64, "unsupported width");
+    static_assert(I >= 1, "not enough integer bits");
+    static_assert(F >= 1, "not enough fractional bits");
 
     template<int, int> friend class q_base;
 
 public:
-    using int_type = int_t<N + D>;
+    using int_type = int_t<I + F>;
 
     q_base() = default;
 
@@ -25,7 +25,7 @@ public:
              std::enable_if_t<std::is_floating_point<T>::value> * = nullptr>
     explicit constexpr q_base(T f)
     {
-        using int_tt = int_t<1 + N + D>;
+        using int_tt = int_t<1 + I + F>;
         int_tt tmp   = base() * f * 2.0;
         if (f > 0)
         {
@@ -48,20 +48,20 @@ public:
 
     constexpr q_base(const q_base &f) { n = f.n; }
 
-    template<int N_O, int D_O, std::enable_if_t<(D_O <= D)> * = nullptr>
-    explicit constexpr q_base(q_base<N_O, D_O> f)
+    template<int I_O, int F_O, std::enable_if_t<(F_O <= F)> * = nullptr>
+    explicit constexpr q_base(q_base<I_O, F_O> f)
     {
-        constexpr auto shift                           = D - D_O;
-        int_t<std::max(N, N_O) + std::max(D, D_O)> tmp = f.n;
+        constexpr auto shift                           = F - F_O;
+        int_t<std::max(I, I_O) + std::max(F, F_O)> tmp = f.n;
         n                                              = tmp << shift;
     }
 
-    template<int N_O, int D_O, std::enable_if_t<(D_O > D)> * = nullptr>
-    explicit constexpr q_base(q_base<N_O, D_O> f)
+    template<int I_O, int F_O, std::enable_if_t<(F_O > F)> * = nullptr>
+    explicit constexpr q_base(q_base<I_O, F_O> f)
     {
-        constexpr auto shift = D_O - D;
+        constexpr auto shift = F_O - F;
         using std::abs;
-        int_t<std::max(N, N_O) + D_O> tmp = f.n;
+        int_t<std::max(I, I_O) + F_O> tmp = f.n;
         tmp                               = abs(tmp);
         tmp += 1l << (shift - 1);
         tmp >>= shift;
@@ -109,11 +109,11 @@ public:
 
     static q_base mul_std(const q_base &a, const q_base &b)
     {
-        constexpr uint8_t numBits = 2 * (N + D);
+        constexpr uint8_t numBits = 2 * (I + F);
         using int_tt              = int_t<numBits>;
         using std::abs;
         int_tt tmp = abs(int_tt(a.n) * int_tt(b.n));
-        tmp        = tmp >> (D - 1);
+        tmp        = tmp >> (F - 1);
         tmp++;
         tmp /= 2;
         if (std::signbit(a.n) ^ std::signbit(b.n))
@@ -127,10 +127,10 @@ public:
 
     static q_base mul_no_rounding(const q_base &a, const q_base &b)
     {
-        constexpr uint8_t numBits = 2 * (N + D);
+        constexpr uint8_t numBits = 2 * (I + F);
         using int_tt              = int_t<numBits>;
         int_tt tmp                = int_tt(a.n) * int_tt(b.n);
-        tmp                       = tmp >> D;
+        tmp                       = tmp >> F;
         q_base ret;
         ret.n = tmp;
         return ret;
@@ -148,10 +148,10 @@ public:
     static q_base div_std(const q_base &a, const q_base &b)
     {
         using std::abs;
-        constexpr uint8_t numBits = 2 * (N + D);
+        constexpr uint8_t numBits = 2 * (I + F);
         using int_tt              = int_t<numBits>;
         int_tt tmp_n              = abs(int_tt(a.n));
-        tmp_n                     = tmp_n * exp2_int<int_tt>(D + 1);
+        tmp_n                     = tmp_n * exp2_int<int_tt>(F + 1);
         tmp_n /= abs(int_tt(b.n));
         tmp_n++;
         tmp_n /= 2;
@@ -176,7 +176,7 @@ public:
     static q_base div_int_std(const q_base &a, const int_type &i)
     {
         using std::abs;
-        using int_tt = int_t<1 + N + D>;
+        using int_tt = int_t<1 + I + F>;
         int_tt tmp   = abs(int_tt(a.n));
         tmp *= 2;
         tmp /= abs(int_tt(i));
@@ -291,7 +291,7 @@ public:
     }
 
     template<typename T = q_base>
-    static constexpr typename std::enable_if<(N >= 3), T>::type
+    static constexpr typename std::enable_if<(I >= 3), T>::type
     exp(const q_base &f)
     {
         if (f == q_base(0))
@@ -300,13 +300,13 @@ public:
         }
         if (f == q_base(1))
         {
-            return q_base(M_E);
+            return q_base(2.718281828);
         }
         return exp_impl(f);
     }
 
     template<typename T = q_base>
-    static constexpr typename std::enable_if<(N < 3), T>::type
+    static constexpr typename std::enable_if<(I < 3), T>::type
     exp(const q_base &f)
     {
         return exp_impl_less_than_one_two_step(f);
@@ -315,14 +315,14 @@ public:
     constexpr static q_base max()
     {
         q_base ret;
-        ret.n = exp2_int<int_t<N + D + 1>>(N + D - 1) - 1;
+        ret.n = exp2_int<int_t<I + F + 1>>(I + F - 1) - 1;
         return ret;
     }
 
     constexpr static q_base min()
     {
         q_base ret;
-        ret.n = -exp2_int<int_t<N + D + 1>>(N + D - 1);
+        ret.n = -exp2_int<int_t<I + F + 1>>(I + F - 1);
         return ret;
     }
 
@@ -336,7 +336,7 @@ public:
         return ret;
     }
 
-    constexpr static uint_t<D + 1> base() { return exp2_int<uint_t<D + 1>>(D); }
+    constexpr static uint_t<F + 1> base() { return exp2_int<uint_t<F + 1>>(F); }
 
 protected:
     template<int N_A, int D_A, int N_B, int D_B>
@@ -382,7 +382,7 @@ private:
 
     constexpr static q_base exp_impl_less_than_one(const q_base &f)
     {
-        using q_tmp = q_base<std::max(N, 3), D - std::max(0, 3 - N)>;
+        using q_tmp = q_base<std::max(I, 3), F - std::max(0, 3 - I)>;
         const q_tmp exp{f};
         q_tmp tmpret(exp + q_tmp(1));
         q_tmp tmpterm{exp};
@@ -407,7 +407,7 @@ private:
         q_base term{0};
         uint8_t i = 2;
         {
-            using q_tmp = q_base<std::max(N, 3), D - std::max(0, 3 - N)>;
+            using q_tmp = q_base<std::max(I, 3), F - std::max(0, 3 - I)>;
             const q_tmp exp{f};
             q_tmp tmpret(exp + q_tmp(1));
             q_tmp tmpterm{exp};
