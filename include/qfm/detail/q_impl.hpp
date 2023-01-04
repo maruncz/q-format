@@ -46,6 +46,13 @@ public:
         n = q_base::int_type(i) * base();
     }
 
+    static constexpr q_base make_raw(q_base::int_type i)
+    {
+        q_base ret;
+        ret.n = i;
+        return ret;
+    }
+
     constexpr q_base(const q_base &f) { n = f.n; }
 
     template<int I_O, int F_O, std::enable_if_t<(F_O <= F)> * = nullptr>
